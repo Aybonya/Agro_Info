@@ -149,6 +149,80 @@ def _match_fragments(fragments):
     return None
 
 
+def _cluster_fragments(fragments, gap_ratio=1.0):
+    """Группирует близко расположенные (по X и Y) фрагменты OCR в кластеры —
+    одна физическая табличка при плохом качестве снимка часто распознаётся
+    несколькими мелкими обрывками рядом друг с другом, а не одним текстом."""
+    items = list(fragments)
+    used = [False] * len(items)
+    clusters = []
+    for i in range(len(items)):
+        if used[i]:
+            continue
+        cluster = [i]
+        used[i] = True
+        changed = True
+        while changed:
+            changed = False
+            cx1 = min(items[k][2][0] for k in cluster)
+            cy1 = min(items[k][2][1] for k in cluster)
+            cx2 = max(items[k][2][2] for k in cluster)
+            cy2 = max(items[k][2][3] for k in cluster)
+            ch = max(cy2 - cy1, 1)
+            for j in range(len(items)):
+                if used[j]:
+                    continue
+                jx1, jy1, jx2, jy2 = items[j][2]
+                jh = max(jy2 - jy1, 1)
+                dx = max(jx1 - cx2, cx1 - jx2, 0)
+                dy = max(jy1 - cy2, cy1 - jy2, 0)
+                if dx < gap_ratio * max(ch, jh) and dy < gap_ratio * max(ch, jh):
+                    cluster.append(j)
+                    used[j] = True
+                    changed = True
+        clusters.append(cluster)
+
+    result = []
+    for cluster in clusters:
+        text = "".join(items[k][0] for k in sorted(cluster, key=lambda k: items[k][2][1]))
+        # уверенность кластера — по САМОМУ СЛАБОМУ фрагменту в нём (не по самому
+        # сильному): один яркий, уверенно прочитанный кусок в куче шумных обрывков
+        # рядом — это ещё не табличка, а музор/текстура со случайным сильным пятном
+        conf = min(items[k][1] for k in cluster)
+        x1 = min(items[k][2][0] for k in cluster)
+        y1 = min(items[k][2][1] for k in cluster)
+        x2 = max(items[k][2][2] for k in cluster)
+        y2 = max(items[k][2][3] for k in cluster)
+        result.append((text, conf, (x1, y1, x2, y2), len(cluster)))
+    return result
+
+
+# Настоящий номер — это 1 строка текста (иногда OCR рвёт её на 2 куска) или 2
+# строки старого образца — никогда не куча из 3+ разрозненных обрывков.
+_UNCERTAIN_MAX_FRAGMENTS = 2
+# Кластер должен быть уверенным целиком, а не содержать один яркий кусок среди шума
+_UNCERTAIN_MIN_CONFIDENCE = 0.5
+
+
+def _uncertain_candidate(fragments):
+    """Последний рубеж: текст не удалось разобрать по формату номера, но если в
+    кластере фрагментов есть хотя бы одна цифра (настоящий номер всегда её
+    содержит) — считаем это местом номера и возвращаем область без подтверждённого
+    текста, чтобы её можно было отметить рамкой и сохранить кроп. Кластер должен
+    быть компактным (≤2 фрагментов) и достаточно уверенным целиком — иначе легко
+    принять текстуру (протектор шины, грязь) или закрашенный инвентарный номер
+    техники за номерной знак."""
+    candidates = [
+        (text, conf, bbox) for text, conf, bbox, n_frags in _cluster_fragments(fragments)
+        if any(ch.isdigit() for ch in text)
+        and n_frags <= _UNCERTAIN_MAX_FRAGMENTS
+        and conf >= _UNCERTAIN_MIN_CONFIDENCE
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda c: c[1])
+
+
 def _zoomed_bottom_ocr(crop):
     """Повторный OCR на увеличенной нижней части кропа техники (где обычно висит
     номер) — помогает, когда техника мелкая/далёкая и настоящая табличка тонет
@@ -184,12 +258,24 @@ def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
         return (x1 + lx1, y1 + ly1, x1 + lx2, y1 + ly2)
 
     match = _match_fragments(_run_ocr(crop))
+    zoom_fragments = None
     if match is None:
-        match = _match_fragments(_zoomed_bottom_ocr(crop))
+        zoom_fragments = _zoomed_bottom_ocr(crop)
+        match = _match_fragments(zoom_fragments)
 
     if match is not None:
         text, conf, bbox_local = match
         return PlateResult(text, conf, to_global(bbox_local))
+
+    # 4) текст не сложился ни в один формат номера, но в кадре есть область
+    # с цифрами там, где обычно висит номер — отмечаем её как неуверенный
+    # кандидат (без подтверждённого текста), чтобы граница и кроп не терялись
+    if zoom_fragments is None:
+        zoom_fragments = _zoomed_bottom_ocr(crop)
+    uncertain = _uncertain_candidate(zoom_fragments)
+    if uncertain is not None:
+        _text, conf, bbox_local = uncertain
+        return PlateResult(None, conf, to_global(bbox_local))
 
     return PlateResult(None, 0.0, None)
 

@@ -4,15 +4,15 @@
 3.jpg,True,dump_truck,Самосвал,0.912,KAMAZ,1.0,ocr,592LBA10,0.825,592LBA10_3.jpg,"[1014.5, 146.4, 2355.3, 1098.0]"
 4.jpg,True,flatbed_grain_truck,Бортовой/зерновоз,0.755,KAMAZ,0.295,clip,PAAH1098,0.805,PAAH1098_4.jpg,"[385.2, 214.8, 1341.7, 1000.1]"
 5.jpg,True,tractor,Трактор,0.83,JOHN DEERE,0.368,clip,,,,"[240.9, 261.5, 988.6, 914.0]"
-6.jpg,False,,,,,,,,,,
+6.jpg,True,tractor,Трактор,0.977,NEW HOLLAND,0.816,clip,,,,"[788.7, 215.9, 1158.7, 627.6]"
 7.jpg,True,tractor,Трактор,0.969,CLAAS,0.402,clip,,,,"[248.0, 101.8, 1142.0, 946.3]"
 8.jpg,True,flatbed_grain_truck,Бортовой/зерновоз,0.639,KAMAZ,0.296,clip,597AQ10,0.914,597AQ10_8.jpg,"[1758.7, 184.2, 2280.9, 574.4]"
 9.jpg,True,dump_truck,Самосвал,0.944,DAF,0.667,ocr,AFEP523,0.973,AFEP523_9.jpg,"[401.1, 174.9, 1472.9, 850.1]"
 10.jpg,True,dump_truck,Самосвал,0.865,KAMAZ,0.713,clip,124AIX10,0.913,124AIX10_10.jpg,"[1597.7, 327.6, 2225.3, 910.1]"
-11.jpg,True,dump_truck,Самосвал,0.875,UAZ,0.298,clip,,,,"[1997.7, 292.3, 2379.0, 588.6]"
+11.jpg,True,dump_truck,Самосвал,0.875,UAZ,0.298,clip,,,unknown_11.jpg,"[1997.7, 292.3, 2379.0, 588.6]"
 12.jpg,True,flatbed_grain_truck,Бортовой/зерновоз,0.96,MAN,1.0,ocr,153AJX10,0.923,153AJX10_12.jpg,"[999.0, 123.7, 2061.0, 1110.6]"
 13.jpg,True,dump_truck,Самосвал,0.943,KAMAZ,0.585,clip,691AS110,0.703,691AS110_13.jpg,"[303.9, 445.4, 611.7, 703.8]"
-14.jpg,False,,,,,,,,,,
+14.jpg,True,dump_truck,Самосвал,0.445,KAMAZ,0.686,clip,,,unknown_14.jpg,"[123.3, 367.5, 560.8, 780.8]"
 15.jpg,True,tractor,Трактор,0.782,KAMAZ,0.316,clip,,,,"[210.7, 87.7, 903.4, 722.5]"
 16.jpg,True,tractor,Трактор,0.964,JOHN DEERE,0.623,clip,,,,"[1476.5, 142.5, 2174.6, 679.5]"
 17.jpg,True,dump_truck,Самосвал,0.497,KAMAZ,0.304,clip,45EUA10,0.942,45EUA10_17.jpg,"[1253.1, 129.5, 2381.8, 1058.7]"

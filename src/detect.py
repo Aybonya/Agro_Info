@@ -21,11 +21,8 @@ def get_model() -> YOLO:
     return _model
 
 
-def detect_vehicles(image_path: str) -> list[Detection]:
-    model = get_model()
-    # imgsz=1280: снимки с весовой — full-HD/широкоугольные, техника часто занимает
-    # небольшую часть кадра. При стандартном imgsz=640 YOLO её banально не находит.
-    result = model.predict(source=image_path, verbose=False, imgsz=1280)[0]
+def _detect_at_scale(model, image_path: str, imgsz: int, conf: float = 0.25) -> list[Detection]:
+    result = model.predict(source=image_path, verbose=False, imgsz=imgsz, conf=conf)[0]
     names = result.names
     detections = []
     for box in result.boxes:
@@ -39,4 +36,22 @@ def detect_vehicles(image_path: str) -> list[Detection]:
             confidence=float(box.conf[0]),
         ))
     detections.sort(key=lambda d: (d.bbox[2] - d.bbox[0]) * (d.bbox[3] - d.bbox[1]), reverse=True)
+    return detections
+
+
+def detect_vehicles(image_path: str) -> list[Detection]:
+    model = get_model()
+    # imgsz=1280: снимки с весовой — full-HD/широкоугольные, техника часто занимает
+    # небольшую часть кадра. При стандартном imgsz=640 YOLO её банально не находит.
+    # Но иногда бывает наоборот: на 1280 вытянутую технику (трактор с прицепом,
+    # грузовик крупным планом) YOLO путает с классом "train" (не входит в число
+    # классов техники) и упускает её — тогда пробуем ещё раз на 640, где эта же
+    # техника чаще уверенно распознаётся как car/truck/bus.
+    detections = _detect_at_scale(model, image_path, 1280)
+    if not detections:
+        detections = _detect_at_scale(model, image_path, 640)
+    if not detections:
+        # техника нестандартной формы (трактор и т.п.) — не входит в обучающие
+        # классы COCO, YOLO уверен в ней слабо; здесь это лучше, чем ничего
+        detections = _detect_at_scale(model, image_path, 640, conf=0.15)
     return detections

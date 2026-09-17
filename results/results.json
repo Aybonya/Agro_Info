@@ -96,17 +96,22 @@
   },
   {
     "file": "6.jpg",
-    "vehicle_found": false,
-    "vehicle_type": null,
-    "vehicle_type_ru": null,
-    "type_confidence": null,
-    "manufacturer": null,
-    "manufacturer_confidence": null,
-    "manufacturer_source": null,
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.977,
+    "manufacturer": "NEW HOLLAND",
+    "manufacturer_confidence": 0.816,
+    "manufacturer_source": "clip",
     "plate_number": null,
     "plate_confidence": null,
     "plate_crop_file": null,
-    "bbox": null
+    "bbox": [
+      788.7,
+      215.9,
+      1158.7,
+      627.6
+    ]
   },
   {
     "file": "7.jpg",
@@ -195,7 +200,7 @@
     "manufacturer_source": "clip",
     "plate_number": null,
     "plate_confidence": null,
-    "plate_crop_file": null,
+    "plate_crop_file": "unknown_11.jpg",
     "bbox": [
       1997.7,
       292.3,
@@ -243,17 +248,22 @@
   },
   {
     "file": "14.jpg",
-    "vehicle_found": false,
-    "vehicle_type": null,
-    "vehicle_type_ru": null,
-    "type_confidence": null,
-    "manufacturer": null,
-    "manufacturer_confidence": null,
-    "manufacturer_source": null,
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.445,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.686,
+    "manufacturer_source": "clip",
     "plate_number": null,
     "plate_confidence": null,
-    "plate_crop_file": null,
-    "bbox": null
+    "plate_crop_file": "unknown_14.jpg",
+    "bbox": [
+      123.3,
+      367.5,
+      560.8,
+      780.8
+    ]
   },
   {
     "file": "15.jpg",

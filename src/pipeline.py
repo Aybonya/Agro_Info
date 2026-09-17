@@ -5,14 +5,16 @@
 
 Результат:
     results/results.json, results/results.csv — данные по каждому фото
-    results/annotated/*.jpg — несколько кадров с отмеченными объектами
+    results/annotated/*.jpg — все обработанные кадры с отмеченными объектами
 """
 import json
 import sys
 from pathlib import Path
 
 import cv2
+import numpy as np
 import pandas as pd
+from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -22,16 +24,43 @@ from plate import find_plate, read_text_tokens  # noqa: E402
 from classify import classify_vehicle  # noqa: E402
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
-N_ANNOTATED_SAMPLES = 10  # сколько размеченных картинок сохранить для демонстрации
+
+# cv2.putText не умеет рисовать кириллицу (выводит "?????"), поэтому весь текст
+# на аннотированных кадрах рисуется через PIL шрифтом с поддержкой юникода
+_FONT_CANDIDATES = ["C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/segoeui.ttf",
+                     "C:/Windows/Fonts/tahoma.ttf"]
+_font_cache: dict[int, ImageFont.FreeTypeFont] = {}
 
 
-def _put_label(image, text, org, color, scale=0.9, thickness=2, bg=(0, 0, 0)):
-    """Текст на закрашенной подложке — читаемо на любом фоне."""
-    (tw, th), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, scale, thickness)
+def _get_font(size: int):
+    if size not in _font_cache:
+        path = next((p for p in _FONT_CANDIDATES if Path(p).exists()), None)
+        _font_cache[size] = ImageFont.truetype(path, size) if path else ImageFont.load_default()
+    return _font_cache[size]
+
+
+def _put_label(image, text, org, color, font_size=26, bg=(0, 0, 0)):
+    """Текст (в т.ч. кириллица) на закрашенной подложке — читаемо на любом фоне."""
+    font = _get_font(font_size)
+    pil_img = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_img)
     x, y = org
-    cv2.rectangle(image, (x - 4, y - th - baseline - 4), (x + tw + 4, y + baseline), bg, -1)
-    cv2.putText(image, text, (x, y - baseline // 2), cv2.FONT_HERSHEY_SIMPLEX,
-                scale, color, thickness, cv2.LINE_AA)
+    l, t, r, b = draw.textbbox((0, 0), text, font=font)
+    tw, th = r - l, b - t
+    draw.rectangle((x - 4, y - th - 8, x + tw + 4, y + 6), fill=(bg[2], bg[1], bg[0]))
+    draw.text((x, y - th - t - 2), text, font=font, fill=(color[2], color[1], color[0]))
+    image[:] = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+
+
+def _draw_text(image, text, org, color, font_size=26):
+    """Текст (в т.ч. кириллица) без подложки — поверх уже нарисованного фона."""
+    font = _get_font(font_size)
+    pil_img = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_img)
+    x, y = org
+    _, t, _, b = draw.textbbox((0, 0), text, font=font)
+    draw.text((x, y - (b - t) - t), text, font=font, fill=(color[2], color[1], color[0]))
+    image[:] = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 
 
 def draw_annotation(image, vehicle_bbox, plate_result, classify_result, vehicle_id=1):
@@ -76,14 +105,13 @@ def draw_annotation(image, vehicle_bbox, plate_result, classify_result, vehicle_
         text_y = py + 100
 
     plate_text = plate_result.text or "не распознан"
-    cv2.putText(image, plate_text, (px + 12, text_y), cv2.FONT_HERSHEY_SIMPLEX,
-                1.0, YELLOW, 2, cv2.LINE_AA)
+    _draw_text(image, plate_text, (px + 12, text_y + 8), YELLOW, font_size=28)
     if plate_result.text:
         cv2.putText(image, f"{plate_result.confidence * 100:.0f}%", (px + 12, text_y + 32),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 1, cv2.LINE_AA)
 
-    cv2.putText(image, f"Type: {classify_result.vehicle_type_ru}", (px + 12, py + panel_h - 44),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+    _draw_text(image, f"Type: {classify_result.vehicle_type_ru}",
+               (px + 12, py + panel_h - 38), (255, 255, 255), font_size=18)
     mf_text = f"Brand: {classify_result.manufacturer or '?'}"
     cv2.putText(image, mf_text, (px + 12, py + panel_h - 18),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
@@ -179,7 +207,7 @@ def main():
         print(f"[{i}/{len(image_paths)}] {path.name} ...", flush=True)
         record, annotated = process_image(path)
         records.append(record)
-        if annotated is not None and i <= N_ANNOTATED_SAMPLES:
+        if annotated is not None:
             out_path = ANNOTATED_DIR / f"annotated_{path.name}"
             cv2.imwrite(str(out_path), annotated)
 
