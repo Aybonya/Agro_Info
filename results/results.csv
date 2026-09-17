@@ -24,3 +24,4 @@
 23.jpg,True,tractor,Трактор,0.619,JOHN DEERE,0.434,clip,,,,"[1152.1, 59.7, 2008.7, 669.2]"
 24.jpg,True,special_equipment,Спецтехника,0.477,JOHN DEERE,0.28,clip,,,,"[312.5, 557.3, 663.7, 865.4]"
 25.jpg,True,dump_truck,Самосвал,0.951,KAMAZ,1.0,ocr,384CBA10,0.901,384CBA10_25.jpg,"[880.5, 126.3, 2170.5, 949.7]"
+hj.jpg,True,dump_truck,Самосвал,0.987,KAMAZ,1.0,ocr,195NZA16,0.871,195NZA16_hj.jpg,"[31.4, 291.2, 348.2, 532.0]"

@@ -473,5 +473,24 @@
       2170.5,
       949.7
     ]
+  },
+  {
+    "file": "hj.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.987,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 1.0,
+    "manufacturer_source": "ocr",
+    "plate_number": "195NZA16",
+    "plate_confidence": 0.871,
+    "plate_crop_file": "195NZA16_hj.jpg",
+    "bbox": [
+      31.4,
+      291.2,
+      348.2,
+      532.0
+    ]
   }
 ]
