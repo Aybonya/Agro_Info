@@ -7,6 +7,7 @@
     results/results.json, results/results.csv — данные по каждому фото
     results/annotated/*.jpg — все обработанные кадры с отмеченными объектами
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -189,27 +190,78 @@ def process_image(path: Path) -> dict:
     return record, annotated
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Детекция техники, номеров, типа и производителя по фото.")
+    parser.add_argument(
+        "images", nargs="*",
+        help="Конкретные файлы для обработки (имя файла из --dir или полный путь). "
+             "Если не указаны — обрабатываются все фото из --dir.")
+    parser.add_argument(
+        "--dir", "-d", type=Path, default=DATA_DIR,
+        help=f"Папка с фото (по умолчанию {DATA_DIR}).")
+    return parser.parse_args()
+
+
+def resolve_image_paths(args) -> list[Path]:
+    """Список файлов для обработки: указанные явно (с проверкой, что существуют
+    и являются изображениями) или все фото из --dir, если ничего не указано."""
+    if not args.images:
+        return sorted(
+            [p for p in args.dir.iterdir() if p.suffix.lower() in IMAGE_EXTS],
+            key=lambda p: (len(p.stem), p.stem),
+        )
+
+    paths = []
+    for name in args.images:
+        path = Path(name)
+        if not path.exists():
+            path = args.dir / name
+        if not path.exists():
+            print(f"Файл не найден: {name}")
+            continue
+        if path.suffix.lower() not in IMAGE_EXTS:
+            print(f"Пропущен (не изображение): {path}")
+            continue
+        paths.append(path)
+    return paths
+
+
+def load_existing_records() -> dict:
+    """Ранее сохранённые результаты (file -> record), чтобы при обработке
+    отдельных файлов не терять данные по остальным фото из прошлого запуска."""
+    json_path = RESULTS_DIR / "results.json"
+    if not json_path.exists():
+        return {}
+    with open(json_path, encoding="utf-8") as f:
+        return {r["file"]: r for r in json.load(f)}
+
+
 def main():
+    args = parse_args()
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     ANNOTATED_DIR.mkdir(parents=True, exist_ok=True)
     PLATES_DIR.mkdir(parents=True, exist_ok=True)
 
-    image_paths = sorted(
-        [p for p in DATA_DIR.iterdir() if p.suffix.lower() in IMAGE_EXTS],
-        key=lambda p: (len(p.stem), p.stem),
-    )
+    image_paths = resolve_image_paths(args)
     if not image_paths:
-        print(f"Нет изображений в {DATA_DIR}")
+        print(f"Нет изображений для обработки в {args.dir}")
         return
 
-    records = []
+    # при обработке конкретных файлов (не всей папки целиком) сохраняем
+    # результаты по остальным ранее обработанным фото, а не стираем их
+    is_partial_run = bool(args.images)
+    records_by_file = load_existing_records() if is_partial_run else {}
+
     for i, path in enumerate(image_paths, 1):
         print(f"[{i}/{len(image_paths)}] {path.name} ...", flush=True)
         record, annotated = process_image(path)
-        records.append(record)
+        records_by_file[record["file"]] = record
         if annotated is not None:
             out_path = ANNOTATED_DIR / f"annotated_{path.name}"
             cv2.imwrite(str(out_path), annotated)
+
+    records = sorted(records_by_file.values(), key=lambda r: (len(r["file"]), r["file"]))
 
     df = pd.DataFrame(records)
     df.to_csv(RESULTS_DIR / "results.csv", index=False, encoding="utf-8-sig")
@@ -219,7 +271,9 @@ def main():
     found = sum(r["vehicle_found"] for r in records)
     plates = sum(1 for r in records if r["plate_number"])
     plate_crops = sum(1 for r in records if r["plate_crop_file"])
-    print(f"\nГотово: {len(records)} фото, техника найдена на {found}, номер распознан на {plates}.")
+    print(f"\nГотово: обработано {len(image_paths)} фото "
+          f"(всего в результатах {len(records)}), техника найдена на {found}, "
+          f"номер распознан на {plates}.")
     print(f"Результаты: {RESULTS_DIR / 'results.json'}, {RESULTS_DIR / 'results.csv'}")
     print(f"Размеченные примеры: {ANNOTATED_DIR}")
     print(f"Кропы номеров ({plate_crops} шт.): {PLATES_DIR}")
