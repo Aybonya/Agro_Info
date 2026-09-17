@@ -16,6 +16,10 @@ _ocr = None
 # слишком легко совпадает со штампом даты на кадре камеры (например "2019" в "2019 Tue").
 _FALLBACK_PLATE_REGEX = re.compile(r"^\d{2,3}[A-Z]{1,4}\d{0,4}$")
 _FALLBACK_LEN_RANGE = range(5, 10)
+# Номера старого двухстрочного образца (часто на синих табличках прицепов/спецтехники):
+# буквенная серия сверху, номер снизу — например "AFE" над "P523". OCR читает такие
+# строки как два отдельных фрагмента, поэтому их нужно сначала склеить по вертикали.
+_TWO_LINE_PLATE_REGEX = re.compile(r"^[A-Z]{1,4}\d{2,5}$")
 # Сколько символов слева пробуем отрезать перед строгим совпадением с форматом номера —
 # OCR иногда цепляет соседний код страны ("KZ"/"K2" слева от рамки номера) к тексту
 _MAX_PREFIX_TRIM = 3
@@ -67,6 +71,33 @@ def _run_ocr(crop):
     return results
 
 
+def _two_line_candidates(fragments):
+    """Ищет пары фрагментов, расположенных друг над другом (верхняя строка —
+    буквенная серия, нижняя — номер с кодом региона), и склеивает их в одного
+    кандидата в естественном порядке чтения (сверху вниз)."""
+    candidates = []
+    for text_a, conf_a, box_a in fragments:
+        ax1, ay1, ax2, ay2 = box_a
+        ah = max(ay2 - ay1, 1)
+        aw = max(ax2 - ax1, 1)
+        for text_b, conf_b, box_b in fragments:
+            bx1, by1, bx2, by2 = box_b
+            if by1 <= ay1:  # b должен быть строго ниже a (a — верхняя строка)
+                continue
+            bh = max(by2 - by1, 1)
+            x_overlap = min(ax2, bx2) - max(ax1, bx1)
+            if x_overlap < 0.4 * min(aw, bx2 - bx1):
+                continue
+            gap = by1 - ay2
+            if gap < -0.6 * max(ah, bh) or gap > 0.9 * max(ah, bh):
+                continue
+            merged_text = text_a + text_b
+            conf = min(conf_a, conf_b)
+            bbox = (min(ax1, bx1), ay1, max(ax2, bx2), by2)
+            candidates.append((merged_text, conf, bbox))
+    return candidates
+
+
 def _best_strict_match(text: str):
     """Пробует сам текст и его суффиксы (отрезая посторонний префикс вроде кода
     страны 'KZ'/'K2', слипшегося с рамкой номера) на точное совпадение с форматом
@@ -113,6 +144,15 @@ def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     ]
     if fallback_candidates:
         text, conf, bbox_local = max(fallback_candidates, key=lambda c: c[1])
+        return PlateResult(text, conf, to_global(bbox_local))
+
+    # 3) двухстрочный номер старого образца (серия сверху, номер снизу)
+    two_line_matches = [
+        (text, conf, bbox_local) for text, conf, bbox_local in _two_line_candidates(fragments)
+        if _TWO_LINE_PLATE_REGEX.match(text)
+    ]
+    if two_line_matches:
+        text, conf, bbox_local = max(two_line_matches, key=lambda c: c[1])
         return PlateResult(text, conf, to_global(bbox_local))
 
     return PlateResult(None, 0.0, None)

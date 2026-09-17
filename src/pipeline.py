@@ -22,7 +22,7 @@ from plate import find_plate, read_text_tokens  # noqa: E402
 from classify import classify_vehicle  # noqa: E402
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
-N_ANNOTATED_SAMPLES = 6  # сколько размеченных картинок сохранить для демонстрации
+N_ANNOTATED_SAMPLES = 10  # сколько размеченных картинок сохранить для демонстрации
 
 
 def _put_label(image, text, org, color, scale=0.9, thickness=2, bg=(0, 0, 0)):
