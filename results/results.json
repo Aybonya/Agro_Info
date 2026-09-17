@@ -1,0 +1,467 @@
+[
+  {
+    "file": "1.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.871,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 1.0,
+    "manufacturer_source": "ocr",
+    "plate_number": "160ALV10",
+    "plate_confidence": 0.935,
+    "plate_crop_file": "160ALV10_1.jpg",
+    "bbox": [
+      496.3,
+      316.8,
+      1820.6,
+      1285.2
+    ]
+  },
+  {
+    "file": "2.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.825,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.562,
+    "manufacturer_source": "clip",
+    "plate_number": "81S10",
+    "plate_confidence": 0.695,
+    "plate_crop_file": "81S10_2.jpg",
+    "bbox": [
+      2130.3,
+      159.9,
+      2416.1,
+      439.4
+    ]
+  },
+  {
+    "file": "3.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.912,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 1.0,
+    "manufacturer_source": "ocr",
+    "plate_number": "592LBA10",
+    "plate_confidence": 0.825,
+    "plate_crop_file": "592LBA10_3.jpg",
+    "bbox": [
+      1014.5,
+      146.4,
+      2355.3,
+      1098.0
+    ]
+  },
+  {
+    "file": "4.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.755,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.295,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      385.2,
+      214.8,
+      1341.7,
+      1000.1
+    ]
+  },
+  {
+    "file": "5.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.83,
+    "manufacturer": "JOHN DEERE",
+    "manufacturer_confidence": 0.368,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      240.9,
+      261.5,
+      988.6,
+      914.0
+    ]
+  },
+  {
+    "file": "6.jpg",
+    "vehicle_found": false,
+    "vehicle_type": null,
+    "vehicle_type_ru": null,
+    "type_confidence": null,
+    "manufacturer": null,
+    "manufacturer_confidence": null,
+    "manufacturer_source": null,
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": null
+  },
+  {
+    "file": "7.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.969,
+    "manufacturer": "CLAAS",
+    "manufacturer_confidence": 0.402,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      248.0,
+      101.8,
+      1142.0,
+      946.3
+    ]
+  },
+  {
+    "file": "8.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.639,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.296,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      1758.7,
+      184.2,
+      2280.9,
+      574.4
+    ]
+  },
+  {
+    "file": "9.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.944,
+    "manufacturer": "DAF",
+    "manufacturer_confidence": 0.667,
+    "manufacturer_source": "ocr",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      401.1,
+      174.9,
+      1472.9,
+      850.1
+    ]
+  },
+  {
+    "file": "10.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.865,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.713,
+    "manufacturer_source": "clip",
+    "plate_number": "124AIX10",
+    "plate_confidence": 0.913,
+    "plate_crop_file": "124AIX10_10.jpg",
+    "bbox": [
+      1597.7,
+      327.6,
+      2225.3,
+      910.1
+    ]
+  },
+  {
+    "file": "11.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.875,
+    "manufacturer": "UAZ",
+    "manufacturer_confidence": 0.298,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      1997.7,
+      292.3,
+      2379.0,
+      588.6
+    ]
+  },
+  {
+    "file": "12.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.96,
+    "manufacturer": "MAN",
+    "manufacturer_confidence": 1.0,
+    "manufacturer_source": "ocr",
+    "plate_number": "153AJX10",
+    "plate_confidence": 0.923,
+    "plate_crop_file": "153AJX10_12.jpg",
+    "bbox": [
+      999.0,
+      123.7,
+      2061.0,
+      1110.6
+    ]
+  },
+  {
+    "file": "13.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.943,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.585,
+    "manufacturer_source": "clip",
+    "plate_number": "691AS110",
+    "plate_confidence": 0.703,
+    "plate_crop_file": "691AS110_13.jpg",
+    "bbox": [
+      303.9,
+      445.4,
+      611.7,
+      703.8
+    ]
+  },
+  {
+    "file": "14.jpg",
+    "vehicle_found": false,
+    "vehicle_type": null,
+    "vehicle_type_ru": null,
+    "type_confidence": null,
+    "manufacturer": null,
+    "manufacturer_confidence": null,
+    "manufacturer_source": null,
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": null
+  },
+  {
+    "file": "15.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.782,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.316,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      210.7,
+      87.7,
+      903.4,
+      722.5
+    ]
+  },
+  {
+    "file": "16.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.964,
+    "manufacturer": "JOHN DEERE",
+    "manufacturer_confidence": 0.623,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      1476.5,
+      142.5,
+      2174.6,
+      679.5
+    ]
+  },
+  {
+    "file": "17.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.497,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.304,
+    "manufacturer_source": "clip",
+    "plate_number": "45EUA10",
+    "plate_confidence": 0.942,
+    "plate_crop_file": "45EUA10_17.jpg",
+    "bbox": [
+      1253.1,
+      129.5,
+      2381.8,
+      1058.7
+    ]
+  },
+  {
+    "file": "18.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.91,
+    "manufacturer": "IVECO",
+    "manufacturer_confidence": 0.522,
+    "manufacturer_source": "clip",
+    "plate_number": "041AHF10",
+    "plate_confidence": 0.926,
+    "plate_crop_file": "041AHF10_18.jpg",
+    "bbox": [
+      1409.2,
+      6.1,
+      2358.4,
+      746.7
+    ]
+  },
+  {
+    "file": "19.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.746,
+    "manufacturer": "CASE",
+    "manufacturer_confidence": 0.6,
+    "manufacturer_source": "ocr",
+    "plate_number": "927DPA10",
+    "plate_confidence": 0.956,
+    "plate_crop_file": "927DPA10_19.jpg",
+    "bbox": [
+      362.8,
+      227.5,
+      1476.7,
+      1147.4
+    ]
+  },
+  {
+    "file": "20.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "car",
+    "vehicle_type_ru": "Легковой автомобиль",
+    "type_confidence": 0.422,
+    "manufacturer": "UAZ",
+    "manufacturer_confidence": 0.778,
+    "manufacturer_source": "clip",
+    "plate_number": "597AQ10",
+    "plate_confidence": 0.793,
+    "plate_crop_file": "597AQ10_20.jpg",
+    "bbox": [
+      238.5,
+      342.7,
+      572.0,
+      654.7
+    ]
+  },
+  {
+    "file": "21.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.541,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.629,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      713.6,
+      48.6,
+      2172.3,
+      1176.5
+    ]
+  },
+  {
+    "file": "22.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "flatbed_grain_truck",
+    "vehicle_type_ru": "Бортовой/зерновоз",
+    "type_confidence": 0.775,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.588,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      982.8,
+      264.7,
+      2256.0,
+      1062.9
+    ]
+  },
+  {
+    "file": "23.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "tractor",
+    "vehicle_type_ru": "Трактор",
+    "type_confidence": 0.619,
+    "manufacturer": "JOHN DEERE",
+    "manufacturer_confidence": 0.434,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      1152.1,
+      59.7,
+      2008.7,
+      669.2
+    ]
+  },
+  {
+    "file": "24.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "special_equipment",
+    "vehicle_type_ru": "Спецтехника",
+    "type_confidence": 0.477,
+    "manufacturer": "JOHN DEERE",
+    "manufacturer_confidence": 0.28,
+    "manufacturer_source": "clip",
+    "plate_number": null,
+    "plate_confidence": null,
+    "plate_crop_file": null,
+    "bbox": [
+      312.5,
+      557.3,
+      663.7,
+      865.4
+    ]
+  },
+  {
+    "file": "25.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.951,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 1.0,
+    "manufacturer_source": "ocr",
+    "plate_number": "384CBA10",
+    "plate_confidence": 0.901,
+    "plate_crop_file": "384CBA10_25.jpg",
+    "bbox": [
+      880.5,
+      126.3,
+      2170.5,
+      949.7
+    ]
+  }
+]
