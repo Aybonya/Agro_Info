@@ -2,6 +2,7 @@
 import re
 from dataclasses import dataclass
 
+import cv2
 from paddleocr import PaddleOCR
 
 from config import PLATE_REGEX
@@ -23,6 +24,11 @@ _TWO_LINE_PLATE_REGEX = re.compile(r"^[A-Z]{1,4}\d{2,5}$")
 # Сколько символов слева пробуем отрезать перед строгим совпадением с форматом номера —
 # OCR иногда цепляет соседний код страны ("KZ"/"K2" слева от рамки номера) к тексту
 _MAX_PREFIX_TRIM = 3
+# Если номер не нашёлся в полном кропе техники — техника может быть мелкой/далёкой,
+# и сама табличка тонет среди более крупных деталей (шильдики, закрашенные номера на
+# кузове). Повторно ищем в увеличенной нижней части кропа, где обычно висит номер.
+_ZOOM_BOTTOM_FRACTION = 0.45
+_ZOOM_SCALE = 4
 
 
 @dataclass
@@ -109,6 +115,60 @@ def _best_strict_match(text: str):
     return None
 
 
+def _match_fragments(fragments):
+    """Прогоняет фрагменты OCR через три уровня проверки (точный формат номера,
+    мягкий фолбэк, двухстрочный номер) и возвращает лучшего кандидата
+    (text, conf, bbox_local) либо None."""
+    # 1) точный формат номера — пробуем каждый фрагмент целиком и его суффиксы
+    # (PaddleOCR обычно читает весь номер одним связным фрагментом)
+    best = None
+    for text, conf, bbox_local in fragments:
+        matched = _best_strict_match(text)
+        if matched is not None and (best is None or conf > best[1]):
+            best = (matched, conf, bbox_local)
+    if best is not None:
+        return best
+
+    # 2) запасной вариант: текст похож на номер по форме "цифры-буквы-(цифры)",
+    # даже если не совпадает точно (например, не распознался код региона)
+    fallback_candidates = [
+        (text, conf, bbox_local) for text, conf, bbox_local in fragments
+        if len(text) in _FALLBACK_LEN_RANGE and _FALLBACK_PLATE_REGEX.match(text)
+    ]
+    if fallback_candidates:
+        return max(fallback_candidates, key=lambda c: c[1])
+
+    # 3) двухстрочный номер старого образца (серия сверху, номер снизу)
+    two_line_matches = [
+        (text, conf, bbox_local) for text, conf, bbox_local in _two_line_candidates(fragments)
+        if _TWO_LINE_PLATE_REGEX.match(text)
+    ]
+    if two_line_matches:
+        return max(two_line_matches, key=lambda c: c[1])
+
+    return None
+
+
+def _zoomed_bottom_ocr(crop):
+    """Повторный OCR на увеличенной нижней части кропа техники (где обычно висит
+    номер) — помогает, когда техника мелкая/далёкая и настоящая табличка тонет
+    среди более крупных деталей (закрашенные номера на кузове, шильдики и т.п.).
+    Возвращает фрагменты в координатах исходного crop."""
+    ch = crop.shape[0]
+    y_offset = int(ch * (1 - _ZOOM_BOTTOM_FRACTION))
+    bottom = crop[y_offset:, :]
+    if bottom.size == 0:
+        return []
+    zoomed = cv2.resize(bottom, (bottom.shape[1] * _ZOOM_SCALE, bottom.shape[0] * _ZOOM_SCALE),
+                         interpolation=cv2.INTER_CUBIC)
+    fragments = []
+    for text, conf, (zx1, zy1, zx2, zy2) in _run_ocr(zoomed):
+        bbox_local = (zx1 / _ZOOM_SCALE, zy1 / _ZOOM_SCALE + y_offset,
+                      zx2 / _ZOOM_SCALE, zy2 / _ZOOM_SCALE + y_offset)
+        fragments.append((text, conf, bbox_local))
+    return fragments
+
+
 def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     """image: полный кадр (numpy BGR). vehicle_bbox: bbox техники."""
     x1, y1, x2, y2 = [int(v) for v in vehicle_bbox]
@@ -119,40 +179,16 @@ def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     if crop.size == 0:
         return PlateResult(None, 0.0, None)
 
-    fragments = _run_ocr(crop)
-
     def to_global(bbox_local):
         lx1, ly1, lx2, ly2 = bbox_local
         return (x1 + lx1, y1 + ly1, x1 + lx2, y1 + ly2)
 
-    # 1) точный формат номера — пробуем каждый фрагмент целиком и его суффиксы
-    # (PaddleOCR обычно читает весь номер одним связным фрагментом)
-    best = None
-    for text, conf, bbox_local in fragments:
-        matched = _best_strict_match(text)
-        if matched is not None and (best is None or conf > best[1]):
-            best = (matched, conf, to_global(bbox_local))
+    match = _match_fragments(_run_ocr(crop))
+    if match is None:
+        match = _match_fragments(_zoomed_bottom_ocr(crop))
 
-    if best is not None:
-        return PlateResult(*best)
-
-    # 2) запасной вариант: текст похож на номер по форме "цифры-буквы-(цифры)",
-    # даже если не совпадает точно (например, не распознался код региона)
-    fallback_candidates = [
-        (text, conf, bbox_local) for text, conf, bbox_local in fragments
-        if len(text) in _FALLBACK_LEN_RANGE and _FALLBACK_PLATE_REGEX.match(text)
-    ]
-    if fallback_candidates:
-        text, conf, bbox_local = max(fallback_candidates, key=lambda c: c[1])
-        return PlateResult(text, conf, to_global(bbox_local))
-
-    # 3) двухстрочный номер старого образца (серия сверху, номер снизу)
-    two_line_matches = [
-        (text, conf, bbox_local) for text, conf, bbox_local in _two_line_candidates(fragments)
-        if _TWO_LINE_PLATE_REGEX.match(text)
-    ]
-    if two_line_matches:
-        text, conf, bbox_local = max(two_line_matches, key=lambda c: c[1])
+    if match is not None:
+        text, conf, bbox_local = match
         return PlateResult(text, conf, to_global(bbox_local))
 
     return PlateResult(None, 0.0, None)
