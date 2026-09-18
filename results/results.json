@@ -518,5 +518,45 @@
       348.2,
       532.0
     ]
+  },
+  {
+    "file": "01c9cd9a-50e0-48da-b509-a5d8ba1283c7.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.9,
+    "manufacturer": "GAZ",
+    "manufacturer_confidence": 0.9,
+    "manufacturer_source": "gpt",
+    "model": "GAZ-51",
+    "plate_number": "736AQ19",
+    "plate_confidence": 0.927,
+    "plate_crop_file": "736AQ19_01c9cd9a-50e0-48da-b509-a5d8ba1283c7.jpg",
+    "bbox": [
+      1853.2,
+      167.4,
+      2313.7,
+      564.4
+    ]
+  },
+  {
+    "file": "41dfe6d5-2457-4251-af55-dd7f97af2bd9.jpg",
+    "vehicle_found": true,
+    "vehicle_type": "dump_truck",
+    "vehicle_type_ru": "Самосвал",
+    "type_confidence": 0.8,
+    "manufacturer": "KAMAZ",
+    "manufacturer_confidence": 0.8,
+    "manufacturer_source": "gpt",
+    "model": null,
+    "plate_number": "193ALC10",
+    "plate_confidence": 0.958,
+    "plate_crop_file": "193ALC10_41dfe6d5-2457-4251-af55-dd7f97af2bd9.jpg",
+    "bbox": [
+      464.1,
+      246.9,
+      1156.0,
+      910.3
+    ]
   }
 ]

@@ -25,3 +25,5 @@
 24.jpg,True,tractor,Трактор,0.9,,0.0,unknown,,,,,"[312.5, 557.3, 663.7, 865.4]"
 25.jpg,True,dump_truck,Самосвал,0.9,KAMAZ,0.9,gpt,,384CBA10,0.916,384CBA10_25.jpg,"[880.5, 126.3, 2170.5, 949.7]"
 hj.jpg,True,dump_truck,Самосвал,0.9,KAMAZ,0.9,gpt,,195NZA16,0.871,195NZA16_hj.jpg,"[31.4, 291.2, 348.2, 532.0]"
+01c9cd9a-50e0-48da-b509-a5d8ba1283c7.jpg,True,dump_truck,Самосвал,0.9,GAZ,0.9,gpt,GAZ-51,736AQ19,0.927,736AQ19_01c9cd9a-50e0-48da-b509-a5d8ba1283c7.jpg,"[1853.2, 167.4, 2313.7, 564.4]"
+41dfe6d5-2457-4251-af55-dd7f97af2bd9.jpg,True,dump_truck,Самосвал,0.8,KAMAZ,0.8,gpt,,193ALC10,0.958,193ALC10_41dfe6d5-2457-4251-af55-dd7f97af2bd9.jpg,"[464.1, 246.9, 1156.0, 910.3]"
