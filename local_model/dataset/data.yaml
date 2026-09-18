@@ -1,0 +1,9 @@
+path: C:/Users/akhonon/Desktop/haacka/local_model/dataset
+train: train/images
+val: valid/images
+
+nc: 3
+names:
+  0: license plate
+  1: truck
+  2: trailer

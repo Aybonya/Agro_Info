@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agro Info — GPS Мониторинг · Олжа Агро · Костанай</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      --bg:    #0d1520;
+      --surf:  #111e31;
+      --card:  rgba(15,24,40,0.94);
+      --amber: #f59e0b;
+      --blue:  #3b82f6;
+      --green: #22c55e;
+      --red:   #ef4444;
+      --text:  #e2e8f0;
+      --sub:   #94a3b8;
+      --muted: #475569;
+      --font:  'Manrope', sans-serif;
+      --mono:  'JetBrains Mono', monospace;
+      --disp:  'Unbounded', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── ШАПКА ── */
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      height: 52px;
+      background: rgba(13,21,32,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(59,130,246,0.14);
+      flex-shrink: 0;
+      z-index: 200;
+      position: relative;
+    }
+    .brand {
+      display:flex; align-items:center; gap:9px;
+      text-decoration:none; flex-shrink:0;
+    }
+    .logo-sq {
+      width:30px; height:30px; border-radius:8px;
+      background:linear-gradient(135deg,#1d4ed8,#1e3a5f);
+      display:grid; place-items:center; font-size:15px;
+      box-shadow:0 0 10px rgba(59,130,246,0.4);
+    }
+    .brand-name { font-family:var(--disp); font-size:14px; font-weight:700; color:#fff; }
+    .brand-name b { color:var(--amber); }
+
+    .top-nav {
+      display:flex; align-items:center; gap:3px;
+      background:rgba(8,14,24,0.7);
+      border:1px solid rgba(255,255,255,0.07);
+      padding:3px; border-radius:999px;
+    }
+    .nav-tab {
+      padding:5px 14px; border-radius:999px;
+      font-size:12px; font-weight:700; color:var(--sub);
+      border:none; background:transparent;
+      font-family:var(--font); text-decoration:none;
+      display:flex; align-items:center; gap:5px;
+      transition:all .18s ease; cursor:pointer;
+    }
+    .nav-tab:hover { color:#fff; }
+    .nav-tab.active {
+      background:linear-gradient(135deg,#1d3461,#162849);
+      color:var(--amber);
+      border:1px solid rgba(245,158,11,0.28);
+    }
+    .nav-tab .badge {
+      background:var(--amber); color:#0d1520;
+      font-size:9px; font-weight:900; padding:1px 5px; border-radius:999px;
+    }
+
+    .top-right {
+      display:flex; align-items:center; gap:10px; flex-shrink:0;
+    }
+    .live-pill {
+      display:flex; align-items:center; gap:6px;
+      font-size:11.5px; font-weight:700; color:var(--sub);
+      background:rgba(59,130,246,0.07);
+      padding:4px 10px; border-radius:999px;
+      border:1px solid rgba(59,130,246,0.18);
+    }
+    .pulse-dot {
+      width:7px; height:7px; border-radius:50%;
+      background:var(--amber); box-shadow:0 0 8px var(--amber);
+      animation:beat 1.6s infinite;
+    }
+    @keyframes beat {
+      0%   { transform:scale(0.9); box-shadow:0 0 0 0 rgba(245,158,11,.8); }
+      70%  { transform:scale(1.1); box-shadow:0 0 0 6px rgba(245,158,11,0); }
+      100% { transform:scale(0.9); box-shadow:0 0 0 0 rgba(245,158,11,0); }
+    }
+
+    /* Кнопка редактирования */
+    .btn-edit {
+      display:flex; align-items:center; gap:6px;
+      padding:5px 14px; border-radius:999px;
+      font-size:12px; font-weight:700;
+      border:1px solid rgba(245,158,11,0.3);
+      background:rgba(245,158,11,0.08); color:var(--amber);
+      cursor:pointer; font-family:var(--font);
+      transition:all .18s ease;
+    }
+    .btn-edit:hover { background:rgba(245,158,11,0.15); }
+    .btn-edit.active {
+      background:var(--amber); color:#0d1520;
+      border-color:var(--amber);
+      box-shadow:0 0 14px rgba(245,158,11,0.35);
+    }
+
+    /* ── WORKSPACE ── */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+
+    /* ── КАРТА ── */
+    .map-wrap { position:relative; overflow:hidden; }
+    #modernLeafletMap { width:100%; height:100%; background:#07101a; }
+
+    /* HUD поверх карты */
+    .map-hud-top {
+      position:absolute; top:12px; left:12px; z-index:800;
+      display:flex; gap:8px; flex-wrap:wrap; pointer-events:auto;
+    }
+    .hud-btn {
+      background:rgba(9,16,30,0.92); backdrop-filter:blur(12px);
+      color:#e2e8f0; border:1px solid rgba(59,130,246,0.25);
+      padding:6px 12px; border-radius:999px;
+      font-size:11.5px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; gap:5px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      transition:all .18s ease; font-family:var(--font);
+    }
+    .hud-btn:hover { background:rgba(18,34,62,0.95); border-color:var(--blue); color:#fff; }
+    .hud-btn.active { background:var(--amber); color:#0d1520; border-color:var(--amber); }
+
+    .sim-speed-grp {
+      display:flex;
+      background:rgba(9,16,30,0.92); backdrop-filter:blur(12px);
+      border:1px solid rgba(59,130,246,0.25); border-radius:999px; padding:3px; gap:2px;
+    }
+    .sim-speed-btn {
+      border:none; background:transparent; color:var(--sub);
+      font-family:var(--mono); font-size:11px; font-weight:800;
+      padding:4px 10px; border-radius:999px; cursor:pointer; transition:all .15s;
+    }
+    .sim-speed-btn:hover { color:#fff; }
+    .sim-speed-btn.active { background:var(--amber); color:#0d1520; }
+
+    .map-hud-bot {
+      position:absolute; bottom:12px; left:12px; right:12px; z-index:800;
+      display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; pointer-events:auto;
+    }
+    .map-hud-bot::-webkit-scrollbar { display:none; }
+
+    .map-quick-vehicle {
+      background:rgba(10,18,34,0.92); backdrop-filter:blur(10px);
+      border:1px solid rgba(59,130,246,0.18); border-radius:10px;
+      padding:5px 11px; display:flex; align-items:center; gap:7px;
+      cursor:pointer; white-space:nowrap; font-size:11.5px; font-weight:700;
+      transition:all .18s ease;
+    }
+    .map-quick-vehicle:hover,
+    .map-quick-vehicle.active { background:rgba(18,38,70,0.95); transform:translateY(-2px); }
+    .qv-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .v-plate { font-family:var(--mono); font-size:11px; color:#e2e8f0; }
+
+    /* ── ПАНЕЛЬ РЕДАКТИРОВАНИЯ ── */
+    #editPanel {
+      display: none;
+      position: absolute;
+      top: 12px; right: 12px;
+      z-index: 900;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .edit-panel-card {
+      background: rgba(9,16,30,0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-width: 230px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.1);
+    }
+    .edit-panel-title {
+      font-size: 12px; font-weight: 800; color: var(--amber);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .edit-tools { display:flex; flex-direction:column; gap:6px; }
+    .edit-tool-btn {
+      display:flex; align-items:center; gap:9px;
+      padding:9px 12px; border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--text);
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);
+      cursor:pointer; font-family:var(--font);
+      transition:all .18s ease; width:100%; text-align:left;
+    }
+    .edit-tool-btn:hover { background:rgba(255,255,255,0.08); border-color:var(--blue); }
+    .edit-tool-btn.active {
+      background:rgba(245,158,11,0.12);
+      border-color:var(--amber); color:var(--amber);
+    }
+    .edit-tool-btn .ico { font-size:16px; }
+
+    .edit-hint {
+      font-size:11px; color:var(--muted); margin-top:10px;
+      line-height:1.6; padding-top:10px;
+      border-top:1px solid rgba(255,255,255,0.06);
+    }
+    .edit-hint b { color:var(--sub); }
+
+    .edit-actions { display:flex; gap:6px; margin-top:10px; }
+    .edit-action-btn {
+      flex:1; padding:7px; border-radius:8px;
+      font-size:11.5px; font-weight:700; cursor:pointer;
+      font-family:var(--font); border:1px solid;
+      transition:all .15s ease;
+    }
+    .btn-save {
+      background:rgba(34,197,94,0.1); color:#4ade80;
+      border-color:rgba(34,197,94,0.3);
+    }
+    .btn-save:hover { background:rgba(34,197,94,0.2); }
+    .btn-clear {
+      background:rgba(239,68,68,0.07); color:#f87171;
+      border-color:rgba(239,68,68,0.25);
+    }
+    .btn-clear:hover { background:rgba(239,68,68,0.15); }
+    .btn-finish {
+      background:rgba(245,158,11,0.12); color:var(--amber);
+      border-color:rgba(245,158,11,0.3);
+    }
+    .btn-finish:hover { background:rgba(245,158,11,0.22); }
+    .btn-restore {
+      background:rgba(59,130,246,0.12); color:#60a5fa;
+      border-color:rgba(59,130,246,0.3);
+    }
+    .btn-restore:hover { background:rgba(59,130,246,0.22); }
+
+    /* Маркеры вершин полигонов для редактирования контура */
+    .poly-vertex-handle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.7);
+      cursor: grab;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .poly-vertex-handle:hover {
+      transform: scale(1.4);
+      background: #3b82f6;
+      border-color: #ffffff;
+    }
+    .poly-vertex-handle:active {
+      cursor: grabbing;
+    }
+
+    /* Навигация по кластерам */
+    .cluster-nav-grp {
+      display: flex; gap: 4px;
+      background: rgba(9,16,30,0.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(59,130,246,0.25); border-radius: 999px; padding: 2px 4px;
+    }
+    .hud-pill {
+      font-size: 11px; padding: 5px 10px; border-radius: 999px;
+      background: transparent; border: none; box-shadow: none;
+      color: var(--sub); font-weight: 700;
+    }
+    .hud-pill:hover { background: rgba(59,130,246,0.2); color: #fff; }
+
+    /* ── ПРАВАЯ ПАНЕЛЬ (БОРТОВОЙ КОМПЬЮТЕР) ── */
+    .telemetry-panel {
+      background:rgba(13,21,35,0.98);
+      border-left:1px solid rgba(59,130,246,0.12);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .panel-head {
+      padding:12px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      display:flex; justify-content:space-between; align-items:center;
+      flex-shrink:0;
+    }
+    .panel-head h2 { font-family:var(--disp); font-size:13px; font-weight:700; color:#fff; }
+    .gps-ping { font-family:var(--mono); font-size:11px; color:var(--amber); }
+
+    .gauge-wrap { padding:8px 12px 0; flex-shrink:0; }
+    #echartGaugeContainer {
+      width:100%; height:155px;
+      background:rgba(6,12,22,0.5);
+      border-radius:12px; border:1px solid rgba(255,255,255,0.05);
+    }
+
+    .fleet-list {
+      flex:1; overflow-y:auto;
+      padding:10px 12px 12px;
+      display:flex; flex-direction:column; gap:7px;
+    }
+    .fleet-list::-webkit-scrollbar { width:3px; }
+    .fleet-list::-webkit-scrollbar-track { background:transparent; }
+    .fleet-list::-webkit-scrollbar-thumb { background:rgba(59,130,246,0.25); border-radius:4px; }
+
+    .live-vehicle-item {
+      display:flex; align-items:stretch;
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:11px; background:rgba(14,24,42,0.55);
+      cursor:pointer; transition:all .15s ease; overflow:hidden;
+    }
+    .live-vehicle-item:hover,
+    .live-vehicle-item.selected {
+      border-color:rgba(245,158,11,0.35);
+      background:rgba(24,40,68,0.75);
+    }
+    .veh-color-bar { width:4px; flex-shrink:0; }
+    .live-vehicle-inner { padding:9px 11px; flex:1; min-width:0; }
+    .live-vehicle-top {
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;
+    }
+    .live-plate-badge {
+      font-family:var(--mono); font-size:11px; font-weight:800; color:#fff;
+      background:rgba(8,14,24,0.8); border:1px solid rgba(59,130,246,0.22);
+      padding:1px 6px; border-radius:5px;
+    }
+    .live-speed-badge { font-family:var(--mono); font-size:11.5px; font-weight:800; color:var(--amber); }
+    .live-vehicle-sub { font-size:10.5px; color:var(--sub); display:flex; flex-direction:column; gap:2px; }
+    .live-geozone-tag {
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:10px; font-weight:700; padding:2px 7px;
+      border-radius:4px; margin-top:3px; width:fit-content; border:1px solid;
+    }
+
+    /* ── TOAST ── */
+    #toastNotify {
+      position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:rgba(9,16,30,0.97); backdrop-filter:blur(14px);
+      color:#fff; border:1px solid var(--amber);
+      padding:8px 18px; border-radius:999px;
+      font-size:12px; font-weight:700;
+      box-shadow:0 8px 28px rgba(0,0,0,0.5),0 0 14px rgba(245,158,11,0.2);
+      white-space:nowrap; opacity:0;
+      transition:all .3s cubic-bezier(.34,1.56,.64,1);
+      z-index:9999;
+    }
+    #toastNotify.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    /* Leaflet overrides */
+    .leaflet-popup-content-wrapper { border-radius:12px !important; box-shadow:0 8px 28px rgba(0,0,0,0.35) !important; }
+    .leaflet-popup-tip { background:#fff !important; }
+  </style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;height:100vh;">
+
+  <!-- ШАПКА -->
+  <header class="top-bar">
+    <a href="index.html" class="brand">
+      <div class="logo-sq">🌾</div>
+      <span class="brand-name">Agro <b>Info</b></span>
+    </a>
+
+    <nav class="top-nav">
+      <a href="index.html" class="nav-tab active">
+        🗺 GPS Карта <span class="badge">LIVE</span>
+      </a>
+      <a href="ai.html" class="nav-tab">🤖 AI-Зрение</a>
+      <a href="trips.html" class="nav-tab">📋 Журнал рейсов</a>
+    </nav>
+
+    <div class="top-right">
+      <div class="live-pill">
+        <span class="pulse-dot"></span>
+        <span>5 ТС · Олжа Агро</span>
+      </div>
+      <button class="btn-edit" id="btnEditMode" onclick="toggleEditMode()">
+        ✏ Редактировать карту
+      </button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- Карта -->
+    <div class="map-wrap">
+
+      <!-- HUD кнопки -->
+      <div class="map-hud-top">
+        <button class="hud-btn" onclick="toggleMapSatelliteLayer()">🛰 Спутник / Схема</button>
+        <button class="hud-btn" id="btnSimPlay" onclick="toggleSimulationPlay()">⏸ Пауза</button>
+        <div class="sim-speed-grp">
+          <button class="sim-speed-btn active" data-speed="1"  onclick="setSimSpeed(1)">1×</button>
+          <button class="sim-speed-btn"        data-speed="5"  onclick="setSimSpeed(5)">5×</button>
+          <button class="sim-speed-btn"        data-speed="20" onclick="setSimSpeed(20)">20×</button>
+        </div>
+        <button class="hud-btn" id="btnFollowLock" onclick="toggleFollowVehicle()">🎯 Следовать</button>
+
+        <!-- Быстрая навигация по реальным базам Олжа Агро -->
+        <div class="cluster-nav-grp">
+          <button class="hud-pill" onclick="focusCluster('all')" title="Показать всю карту с полями и элеваторами">🗺 Все объекты</button>
+          <button class="hud-pill" onclick="focusCluster('sadchikovka')" title="Поля №1-3 и Зерноток Олжа Садчиковское">🌾 Садчиковка</button>
+          <button class="hud-pill" onclick="focusCluster('kostanay')" title="Главный элеватор Олжа Астык в Костанае">🏢 Олжа Астык</button>
+          <button class="hud-pill" onclick="focusCluster('zarechnoye')" title="Поля и ХПП Заречное">🌾 Заречное</button>
+          <button class="hud-pill" onclick="focusCluster('maykol')" title="Поля и ХПП Майколь">🌾 Майколь</button>
+        </div>
+      </div>
+
+      <div id="modernLeafletMap"></div>
+
+      <!-- Быстрый выбор машины (снизу) -->
+      <div class="map-hud-bot" id="mapQuickVehicles"></div>
+
+      <!-- Панель редактирования (поверх карты, справа) -->
+      <div id="editPanel">
+        <div class="edit-panel-card">
+          <div class="edit-panel-title">
+            ✏ Редактор объектов
+            <span style="font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;">Олжа Агро</span>
+          </div>
+          <div class="edit-tools">
+            <button class="edit-tool-btn" data-tool="field" onclick="setEditTool('field')">
+              <span class="ico">🌾</span>
+              <div>
+                <div>Нарисовать новое поле</div>
+                <div style="font-size:10px;color:var(--muted);font-weight:500;">Кликайте вершины контура</div>
+              </div>
+            </button>
+            <button class="edit-tool-btn" data-tool="edit_vertices" onclick="setEditTool('edit_vertices')">
+              <span class="ico">📐</span>
+              <div>
+                <div>Изменить контуры полей</div>
+                <div style="font-size:10px;color:var(--muted);font-weight:500;">Тяните маркеры на углах полей</div>
+              </div>
+            </button>
+            <button class="edit-tool-btn" data-tool="warehouse" onclick="setEditTool('warehouse')">
+              <span class="ico">🏢</span>
+              <div>
+                <div>Добавить элеватор / ХПП</div>
+                <div style="font-size:10px;color:var(--muted);font-weight:500;">Один клик на карте</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="edit-hint">
+            <b>Поле:</b> кликайте точки по контуру → <b>двойной клик</b> завершить<br>
+            <b>Изменение границ:</b> перетаскивайте круглые маркеры на углах полей<br>
+            <b>Элеватор:</b> кликните карту для добавления, перетаскивайте для смены места<br>
+            <b>Удаление:</b> кликните на объект → кнопка в окне
+          </div>
+
+          <div class="edit-actions">
+            <button class="edit-action-btn btn-finish" onclick="finishDrawField()">✓ Завершить поле</button>
+            <button class="edit-action-btn btn-save" onclick="saveUserData()">💾 Сохранить</button>
+          </div>
+          <div class="edit-actions" style="margin-top:6px;">
+            <button class="edit-action-btn btn-restore" onclick="resetToRealOlzhaAgro()" style="flex:1;">🔄 Объекты Олжа Агро</button>
+            <button class="edit-action-btn btn-clear" onclick="clearAllData()">🗑 Очистить</button>
+          </div>
+          <div class="edit-actions" style="margin-top:6px;">
+            <input type="file" id="importFileInput" accept=".geojson,.json,.kml" style="display:none;" onchange="handleFileImport(this)">
+            <button class="edit-action-btn" onclick="document.getElementById('importFileInput').click()" style="background:rgba(59,130,246,0.12);color:#93c5fd;border-color:rgba(59,130,246,0.3);">📁 Загрузить KML / GeoJSON</button>
+            <button class="edit-action-btn" onclick="exportGeoJSON()" style="background:rgba(245,158,11,0.1);color:var(--amber);border-color:rgba(245,158,11,0.25);">📤 Экспорт</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Бортовой компьютер -->
+    <aside class="telemetry-panel">
+      <div class="panel-head">
+        <h2>Бортовой компьютер</h2>
+        <span class="gps-ping">GPS: 12 ms</span>
+      </div>
+      <div class="gauge-wrap">
+        <div id="echartGaugeContainer"></div>
+      </div>
+      <div class="fleet-list" id="telemetryListContainer"></div>
+    </aside>
+
+  </div>
+</div>
+
+<div id="toastNotify">✓</div>
+
+<script src="modern.js"></script>
+</body>
+</html>

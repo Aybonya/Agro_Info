@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agro Info — Журнал рейсов · ТОО «Олжа Агро»</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0d1520;
+      --surface:  #111e31;
+      --card:     rgba(17,30,49,0.9);
+      --border:   rgba(59,130,246,0.15);
+      --amber:    #f59e0b;
+      --blue:     #3b82f6;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --text:     #e2e8f0;
+      --sub:      #94a3b8;
+      --muted:    #475569;
+      --font:     'Manrope', sans-serif;
+      --mono:     'JetBrains Mono', monospace;
+      --display:  'Unbounded', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(59,130,246,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 100%, rgba(245,158,11,0.04) 0%, transparent 50%);
+    }
+
+    /* ── ШАПКА ── */
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 28px;
+      background: rgba(13,21,32,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      gap: 16px; position: sticky; top: 0; z-index: 100;
+    }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-sq {
+      width:32px; height:32px; border-radius:9px;
+      background: linear-gradient(135deg,#1d4ed8,#1e3a5f);
+      display:grid; place-items:center; font-size:16px;
+      box-shadow: 0 0 12px rgba(59,130,246,0.4);
+    }
+    .brand-text {
+      font-family: var(--display); font-size:15px; font-weight:700; color:#fff;
+    }
+    .brand-text b { color: var(--amber); }
+
+    .top-nav {
+      display:flex; align-items:center; gap:4px;
+      background: rgba(8,14,24,0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 3px; border-radius:999px;
+    }
+    .nav-tab {
+      padding: 6px 16px; border-radius:999px;
+      font-size:12.5px; font-weight:700; color: var(--sub);
+      cursor:pointer; border:none; background:transparent;
+      font-family: var(--font); text-decoration:none;
+      display:flex; align-items:center; gap:6px;
+      transition: all .18s ease;
+    }
+    .nav-tab:hover { color:#fff; }
+    .nav-tab.active {
+      background: linear-gradient(135deg,#1d3461,#162849);
+      color: var(--amber);
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .nav-tab .badge {
+      background: var(--amber); color:#0d1520;
+      font-size:9px; font-weight:900;
+      padding: 1px 5px; border-radius:999px;
+    }
+    .date-chip {
+      font-family: var(--mono); font-size:11px; color: var(--muted);
+    }
+
+    /* ── КОНТЕНТ ── */
+    .page-content {
+      max-width: 1440px; margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    /* ── KPI ПЛАШКИ ── */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 14px; margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 18px;
+    }
+    .kpi-label { font-size:11px; color: var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    .kpi-value { font-family: var(--display); font-size:22px; font-weight:700; color:#fff; }
+    .kpi-value span { font-size:13px; font-weight:600; color: var(--sub); }
+    .kpi-sub { font-size:11px; color: var(--sub); margin-top:3px; }
+    .kpi-ok    .kpi-value { color: var(--green); }
+    .kpi-warn  .kpi-value { color: var(--red); }
+    .kpi-amber .kpi-value { color: var(--amber); }
+    .kpi-blue  .kpi-value { color: var(--blue); }
+
+    /* ── ЗАГОЛОВОК СЕКЦИИ ── */
+    .section-head {
+      display: flex; justify-content:space-between; align-items:center;
+      margin-bottom: 16px;
+    }
+    .section-head h1 {
+      font-family: var(--display); font-size:18px; font-weight:700; color:#fff;
+    }
+    .section-head p { font-size:12px; color: var(--sub); margin-top:2px; }
+
+    .filter-row {
+      display: flex; gap: 8px; align-items:center;
+    }
+    .filter-btn {
+      padding: 5px 14px; border-radius:999px;
+      font-size:11.5px; font-weight:700; color: var(--sub);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor:pointer; font-family: var(--font);
+      transition: all .15s ease;
+    }
+    .filter-btn:hover { color:#fff; border-color: var(--blue); }
+    .filter-btn.on { background:rgba(59,130,246,0.15); color:var(--blue); border-color:rgba(59,130,246,0.35); }
+    .filter-btn.warn { background:rgba(239,68,68,0.1); color:#f87171; border-color:rgba(239,68,68,0.3); }
+    .filter-btn.ok   { background:rgba(34,197,94,0.1); color:#4ade80; border-color:rgba(34,197,94,0.3); }
+
+    /* ── ТАБЛИЦА ── */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow:hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .trips-table { width:100%; border-collapse:collapse; }
+    .trips-table thead tr {
+      background: rgba(10,18,34,0.95);
+      border-bottom: 1px solid rgba(59,130,246,0.14);
+    }
+    .trips-table thead th {
+      padding: 11px 14px;
+      text-align:left; font-size:10.5px; font-weight:800;
+      color: var(--muted); text-transform:uppercase; letter-spacing:.6px;
+      white-space:nowrap;
+    }
+    .trips-table tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background .15s;
+    }
+    .trips-table tbody tr:last-child { border-bottom:none; }
+    .trips-table tbody tr:hover { background: rgba(59,130,246,0.05); }
+    .trips-table tbody td { padding:12px 14px; vertical-align:middle; white-space:nowrap; }
+
+    /* ячейки */
+    .td-id    { font-family:var(--mono); font-size:11px; font-weight:800; color:var(--blue); }
+    .td-plate {
+      font-family:var(--mono); font-size:12px; font-weight:800; color:#fff;
+      background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2);
+      padding:2px 8px; border-radius:5px; display:inline-block;
+    }
+    .td-driver { font-weight:700; color:#fff; font-size:12.5px; }
+    .td-role   { font-size:10.5px; color: var(--muted); margin-top:1px; }
+    .td-combine strong { display:block; font-size:12px; font-weight:700; color: var(--text); }
+    .td-combine span   { font-size:11px; color: var(--sub); }
+    .td-dest strong { font-size:12.5px; font-weight:700; color:#fff; }
+    .td-dest small  { display:block; font-size:10.5px; color: var(--muted); margin-top:1px; }
+    .td-time { font-family:var(--mono); font-size:12px; font-weight:700; }
+    .td-time.arrive { color: var(--blue); }
+    .td-time.depart { color: var(--amber); }
+    .td-dur {
+      font-family:var(--mono); font-size:11px; color: var(--sub);
+      background:rgba(255,255,255,0.04);
+      padding:2px 8px; border-radius:4px;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+    .td-weight { font-family:var(--mono); font-size:13px; font-weight:800; color:#fff; }
+    .td-weight small { display:block; font-size:9.5px; color:var(--muted); font-weight:500; }
+    .td-mois { font-family:var(--mono); font-size:12px; color:#67e8f9; }
+
+    .status-ok {
+      display:inline-flex; align-items:center; gap:4px;
+      background:rgba(34,197,94,0.1); color:#4ade80;
+      border:1px solid rgba(34,197,94,0.28);
+      padding:3px 9px; border-radius:999px;
+      font-size:11px; font-weight:800;
+    }
+    .status-fraud {
+      display:inline-flex; align-items:center; gap:4px;
+      background:rgba(239,68,68,0.1); color:#f87171;
+      border:1px solid rgba(239,68,68,0.28);
+      padding:3px 9px; border-radius:999px;
+      font-size:11px; font-weight:800;
+    }
+    .status-pending {
+      display:inline-flex; align-items:center; gap:4px;
+      background:rgba(245,158,11,0.1); color:var(--amber);
+      border:1px solid rgba(245,158,11,0.28);
+      padding:3px 9px; border-radius:999px;
+      font-size:11px; font-weight:800;
+    }
+
+    /* Responsive */
+    @media(max-width:1100px) {
+      .kpi-row { grid-template-columns: repeat(3,1fr); }
+      .trips-table { font-size:11px; }
+    }
+    @media(max-width:700px) {
+      .kpi-row { grid-template-columns:1fr 1fr; }
+      .top-nav { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header class="top-bar">
+    <a href="index.html" class="brand">
+      <div class="logo-sq">🌾</div>
+      <span class="brand-text">Agro <b>Info</b></span>
+    </a>
+    <nav class="top-nav">
+      <a href="index.html" class="nav-tab">
+        <span>🗺</span> GPS Карта
+        <span class="badge">LIVE</span>
+      </a>
+      <a href="ai.html" class="nav-tab"><span>🤖</span> AI-Зрение</a>
+      <a href="trips.html" class="nav-tab active"><span>📋</span> Журнал рейсов</a>
+    </nav>
+    <span class="date-chip">18 сентября 2026 · ТОО «Олжа Агро» · Костанайская область</span>
+  </header>
+
+  <!-- КОНТЕНТ -->
+  <div class="page-content">
+
+    <!-- KPI -->
+    <div class="kpi-row">
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-label">Всего рейсов</div>
+        <div class="kpi-value">8 <span>за сегодня</span></div>
+        <div class="kpi-sub">↑ 3 по сравнению со вчера</div>
+      </div>
+      <div class="kpi-card kpi-ok">
+        <div class="kpi-label">Принято рейсов</div>
+        <div class="kpi-value">6 <span>рейс</span></div>
+        <div class="kpi-sub">Без нарушений</div>
+      </div>
+      <div class="kpi-card kpi-warn">
+        <div class="kpi-label">Инциденты</div>
+        <div class="kpi-value">1 <span>рейс</span></div>
+        <div class="kpi-sub">Недостача -1 250 кг</div>
+      </div>
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-label">Зерно принято</div>
+        <div class="kpi-value">83<span>,5 т</span></div>
+        <div class="kpi-sub">Нетто за сутки</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ср. время на весовой</div>
+        <div class="kpi-value" style="color:#e2e8f0;">25 <span>мин</span></div>
+        <div class="kpi-sub">Норматив: 30 мин</div>
+      </div>
+    </div>
+
+    <!-- Заголовок -->
+    <div class="section-head">
+      <div>
+        <h1>📋 Журнал рейсов — Приёмка зерна</h1>
+        <p>Регистрация прибытий и убытий · Элеватор «Олжа Астык», Зерноток «Садчиковское», ХПП «Майколь»</p>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn on" onclick="filterTable('all',this)">Все (8)</button>
+        <button class="filter-btn ok"  onclick="filterTable('ok',this)">✓ Принято</button>
+        <button class="filter-btn warn" onclick="filterTable('fraud',this)">⚠ Инциденты</button>
+        <button class="filter-btn" onclick="filterTable('pending',this)">⟳ На весовой</button>
+      </div>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-card">
+      <table class="trips-table">
+        <thead>
+          <tr>
+            <th>Рейс</th>
+            <th>Гос. номер</th>
+            <th>Водитель / Тракторист</th>
+            <th>Комбайн · Комбайнёр</th>
+            <th>Приёмный пункт · Поле</th>
+            <th>Прибыл</th>
+            <th>Убыл</th>
+            <th>Время стоянки</th>
+            <th>Масса нетто</th>
+            <th>Влажн.</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody id="tripsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+  const TRIPS = [
+    { id:'Р-2601', date:'18.09.2026', plate:'10 814 BSM', vtype:'КАМАЗ 6520', driver:'Нурлан Сейткали', role:'Водитель зерновоза', combine:'Ростсельмаш Torum 785 (#C-102)', combiner:'Серик Тлеуов', field:'Садчиковское — Поле №1', dest:'Элеватор «Олжа Астык»', arrv:'07:14', dept:'07:41', dur:'27 мин', net:14600, mois:13.8, status:'ok' },
+    { id:'Р-2602', date:'18.09.2026', plate:'10 845 KZX', vtype:'Shacman SX3258', driver:'Бауыржан Касымов', role:'Водитель зерновоза', combine:'John Deere S780 (#C-103)', combiner:'Марат Есенов', field:'Олжа Майколь — Участок №5', dest:'Элеватор «Олжа Астык»', arrv:'07:52', dept:'08:19', dur:'27 мин', net:13200, mois:12.8, status:'ok' },
+    { id:'Р-2603', date:'18.09.2026', plate:'10 107 ABC', vtype:'Volvo FMX 460', driver:'Алексей Ветров', role:'Водитель зерновоза', combine:'John Deere S780 (#C-103)', combiner:'Марат Есенов', field:'Олжа Заречное — Участок №4', dest:'Элеватор «Олжа Астык»', arrv:'08:33', dept:'09:05', dur:'32 мин', net:14150, mois:13.1, status:'fraud' },
+    { id:'Р-2604', date:'18.09.2026', plate:'10 296 KDA', vtype:'МТЗ-82 + 2ПТС-4', driver:'Данияр Абенов', role:'Тракторист', combine:'CLAAS Lexion 770 (#C-101)', combiner:'Виктор Петренко', field:'Садчиковское — Поле №1', dest:'Зерноток «Олжа Садчиковское»', arrv:'08:47', dept:'09:08', dur:'21 мин', net:6400, mois:14.2, status:'ok' },
+    { id:'Р-2605', date:'18.09.2026', plate:'10 814 BSM', vtype:'КАМАЗ 6520', driver:'Нурлан Сейткали', role:'Водитель зерновоза', combine:'Ростсельмаш Torum 785 (#C-102)', combiner:'Серик Тлеуов', field:'Садчиковское — Поле №2', dest:'Элеватор «Олжа Астык»', arrv:'09:21', dept:'09:48', dur:'27 мин', net:14420, mois:13.6, status:'ok' },
+    { id:'Р-2606', date:'18.09.2026', plate:'10 523 ARA', vtype:'John Deere 8320R', driver:'Ерлан Мухамедиев', role:'Тракторист', combine:'CLAAS Lexion 770 (#C-101)', combiner:'Виктор Петренко', field:'Садчиковское — Поле №1', dest:'Зерноток «Олжа Садчиковское»', arrv:'09:55', dept:'10:14', dur:'19 мин', net:12960, mois:12.9, status:'ok' },
+    { id:'Р-2607', date:'18.09.2026', plate:'10 845 KZX', vtype:'Shacman SX3258', driver:'Бауыржан Касымов', role:'Водитель зерновоза', combine:'John Deere S780 (#C-103)', combiner:'Марат Есенов', field:'Олжа Майколь — Участок №5', dest:'Элеватор «Олжа Астык»', arrv:'10:28', dept:null, dur:'—', net:null, mois:12.7, status:'pending' },
+    { id:'Р-2608', date:'18.09.2026', plate:'10 107 ABC', vtype:'Volvo FMX 460', driver:'Алексей Ветров', role:'Водитель зерновоза', combine:'Ростсельмаш Torum 785 (#C-102)', combiner:'Серик Тлеуов', field:'Олжа Заречное — Участок №4', dest:'Элеватор «Олжа Астык»', arrv:'10:47', dept:null, dur:'—', net:null, mois:null, status:'pending' },
+  ];
+
+  const fmt = n => n ? new Intl.NumberFormat('ru-RU').format(n) + ' кг' : '—';
+  const statusHtml = s => s === 'ok'
+    ? '<span class="status-ok">✓ Принято</span>'
+    : s === 'fraud'
+      ? '<span class="status-fraud">⚠ Недостача</span>'
+      : '<span class="status-pending">⟳ На весовой</span>';
+
+  let currentFilter = 'all';
+
+  function renderTable(filter) {
+    const tbody = document.getElementById('tripsBody');
+    const rows = filter === 'all' ? TRIPS : TRIPS.filter(t => t.status === filter);
+    tbody.innerHTML = rows.map(t => `
+      <tr data-status="${t.status}">
+        <td><span class="td-id">${t.id}</span></td>
+        <td><span class="td-plate">${t.plate}</span></td>
+        <td>
+          <div class="td-driver">${t.driver}</div>
+          <div class="td-role">${t.role}</div>
+        </td>
+        <td>
+          <div class="td-combine">
+            <strong>${t.combine}</strong>
+            <span>${t.combiner}</span>
+          </div>
+        </td>
+        <td>
+          <div class="td-dest">
+            <strong>${t.dest}</strong>
+            <small>${t.field}</small>
+          </div>
+        </td>
+        <td class="td-time arrive">${t.arrv}</td>
+        <td class="td-time depart">${t.dept || '—'}</td>
+        <td><span class="td-dur">${t.dur}</span></td>
+        <td>
+          <div class="td-weight">${fmt(t.net)}<small>нетто</small></div>
+        </td>
+        <td class="td-mois">${t.mois ? t.mois + '%' : '—'}</td>
+        <td>${statusHtml(t.status)}</td>
+      </tr>`).join('');
+  }
+
+  function filterTable(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    renderTable(f);
+  }
+
+  renderTable('all');
+  </script>
+</body>
+</html>

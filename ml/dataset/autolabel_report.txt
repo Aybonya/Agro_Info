@@ -1,0 +1,8 @@
+Autolabel report
+Source photos: 25
+Auto-labelled: 24
+Train: 19
+Validation: 5
+Skipped: 16.jpg
+
+Review labels visually before deployment.

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['License-Plate']
+
+roboflow:
+  workspace: akh-xkhw0
+  project: truck-license-plate-detection-0bozb
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/akh-xkhw0/truck-license-plate-detection-0bozb/dataset/1

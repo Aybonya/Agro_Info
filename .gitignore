@@ -1,4 +1,28 @@
+# Virtual environment
 .venv/
+venv/
+env/
+
+# Python cache & bytecode
 __pycache__/
 *.pyc
+*.pyo
 .easyocr/
+
+# Temporary run outputs & logs
+output/
+runs/
+local_model/runs/
+local_model/output/
+roboflow_cloud/output/
+*.log
+
+# Large binary database files
+data/mysql/
+data/redis/
+
+# Large raw video files (>50MB)
+videos/
+*.mp4
+*.avi
+*.mkv

@@ -1,0 +1,343 @@
+[
+  {
+    "image": "1.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.732,
+      "bbox_xyxy": [
+        472.5,
+        329.2,
+        1828.3,
+        1304.9
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "10.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.801,
+      "bbox_xyxy": [
+        1598.4,
+        338.3,
+        2227.1,
+        905.7
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "11.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.625,
+      "bbox_xyxy": [
+        1998.8,
+        286.7,
+        2375.3,
+        587.5
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "12.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.232,
+      "bbox_xyxy": [
+        1245.7,
+        209.6,
+        2068.9,
+        1054.2
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "13.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.272,
+      "bbox_xyxy": [
+        300.2,
+        520.4,
+        610.9,
+        694.6
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "14.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.103,
+      "bbox_xyxy": [
+        105.0,
+        358.4,
+        562.2,
+        780.4
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "15.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.662,
+      "bbox_xyxy": [
+        210.6,
+        126.0,
+        900.6,
+        704.4
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "16.jpg",
+    "equipment": null,
+    "method": null
+  },
+  {
+    "image": "17.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.842,
+      "bbox_xyxy": [
+        1235.3,
+        142.7,
+        2383.5,
+        1048.3
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "18.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.518,
+      "bbox_xyxy": [
+        1424.8,
+        10.0,
+        2357.2,
+        739.9
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "19.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.271,
+      "bbox_xyxy": [
+        67.4,
+        216.0,
+        1476.3,
+        1130.0
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "2.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.253,
+      "bbox_xyxy": [
+        2031.0,
+        274.1,
+        2504.9,
+        1044.7
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "20.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.507,
+      "bbox_xyxy": [
+        239.9,
+        340.8,
+        570.0,
+        621.1
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "21.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.879,
+      "bbox_xyxy": [
+        505.8,
+        2.1,
+        2183.6,
+        1155.3
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "22.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.291,
+      "bbox_xyxy": [
+        2.1,
+        131.0,
+        1075.9,
+        1381.1
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "23.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.649,
+      "bbox_xyxy": [
+        1133.2,
+        111.9,
+        1997.3,
+        661.7
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "24.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.319,
+      "bbox_xyxy": [
+        50.2,
+        593.0,
+        668.4,
+        854.6
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "25.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.881,
+      "bbox_xyxy": [
+        889.5,
+        126.4,
+        2232.0,
+        924.6
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "3.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.409,
+      "bbox_xyxy": [
+        1041.4,
+        152.6,
+        2365.3,
+        1079.2
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "4.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.173,
+      "bbox_xyxy": [
+        366.2,
+        210.0,
+        1341.8,
+        1159.1
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "5.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.681,
+      "bbox_xyxy": [
+        198.2,
+        282.7,
+        989.3,
+        907.2
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "6.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.07,
+      "bbox_xyxy": [
+        790.0,
+        11.6,
+        1757.1,
+        633.3
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "7.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.124,
+      "bbox_xyxy": [
+        236.6,
+        0.7,
+        1128.6,
+        962.1
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "8.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.619,
+      "bbox_xyxy": [
+        1753.5,
+        177.4,
+        2280.3,
+        574.6
+      ]
+    },
+    "method": "foundation_fallback"
+  },
+  {
+    "image": "9.jpg",
+    "equipment": {
+      "label": "gruzovik",
+      "confidence": 0.502,
+      "bbox_xyxy": [
+        388.8,
+        183.6,
+        1453.4,
+        814.0
+      ]
+    },
+    "method": "foundation_fallback"
+  }
+]

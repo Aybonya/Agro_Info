@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agro Info — Система учёта зерна, весового контроля и GPS-мониторинга</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">🌾</span>
+        <span>Agro <span>Info</span></span>
+        <span class="brand-subtag">AI · AgTech</span>
+      </div>
+
+      <div class="farm-switch">
+        <span class="farm-dot"></span>
+        <div>
+          <small>Костанайская область</small>
+          <strong>ТОО «Костанай-Агро»</strong>
+        </div>
+        <span class="chevron">⌄</span>
+      </div>
+
+      <nav id="nav">
+        <button class="nav-item active" data-page="dashboard"><span>▦</span>Обзор и KPI</button>
+        <p>ОПЕРАЦИИ В ПОЛЕ И НА ВЕСОВОЙ</p>
+        <button class="nav-item" data-page="map"><span>🗺</span>GPS-Карта & Геозоны <b class="live-pulse">LIVE</b></button>
+        <button class="nav-item" data-page="weighing"><span>⚖</span>Весовая & AI-Камера</button>
+        <button class="nav-item" data-page="bunker"><span>🚜</span>Бункеры комбайнов</button>
+        <button class="nav-item" data-page="trips"><span>↝</span>Рейсы & Логистика <b id="tripBadge">0</b></button>
+        <button class="nav-item" data-page="storage"><span>▣</span>Элеватор & Склады</button>
+        <p>АНАЛИТИКА И ЭКОНОМИКА</p>
+        <button class="nav-item" data-page="fields"><span>⌁</span>Поля и урожайность</button>
+        <button class="nav-item" data-page="finance"><span>₸</span>Экономика & Маржа</button>
+        <button class="nav-item" data-page="reports"><span>↓</span>Экспорт в Excel</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar">С</div>
+        <div>
+          <strong>Салах Н.</strong>
+          <small>Гл. агроном / Диспетчер</small>
+        </div>
+        <button id="resetData" title="Сбросить демо-данные">↻</button>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <span class="eyebrow" id="pageKicker">ТОО «КОСТАНАЙ-АГРО» · КОСТАНАЙСКАЯ ОБЛАСТЬ · КЕЙС №2</span>
+          <h1 id="pageTitle">Панель управления</h1>
+        </div>
+        <div class="header-actions">
+          <button class="ghost" id="demoTour">⚡ Сценарий показа для жюри</button>
+          <div class="live-indicator"><span class="pulse-dot"></span> 3 комбайна · 5 зерновозов</div>
+          <button class="date-pill">18 сентября 2026 <span>⌄</span></button>
+        </div>
+      </header>
+
+      <section id="pageContent"></section>
+    </main>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
