@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agro Info — AI-Зрение · ТОО «Олжа Агро»</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0d1520;
+      --surface: #111e31;
+      --card:    rgba(15,24,40,0.92);
+      --border:  rgba(59,130,246,0.15);
+      --amber:   #f59e0b;
+      --blue:    #3b82f6;
+      --green:   #22c55e;
+      --red:     #ef4444;
+      --text:    #e2e8f0;
+      --sub:     #94a3b8;
+      --muted:   #475569;
+      --font:    'Manrope', sans-serif;
+      --mono:    'JetBrains Mono', monospace;
+      --display: 'Unbounded', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(59,130,246,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 100%, rgba(245,158,11,0.04) 0%, transparent 50%);
+    }
+
+    /* ── ШАПКА ── */
+    .top-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 28px;
+      background: rgba(13,21,32,0.97); backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      gap:16px; position:sticky; top:0; z-index:100;
+    }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-sq {
+      width:32px; height:32px; border-radius:9px;
+      background: linear-gradient(135deg,#1d4ed8,#1e3a5f);
+      display:grid; place-items:center; font-size:16px;
+      box-shadow:0 0 12px rgba(59,130,246,0.4);
+    }
+    .brand-text { font-family:var(--display); font-size:15px; font-weight:700; color:#fff; }
+    .brand-text b { color:var(--amber); }
+
+    .top-nav {
+      display:flex; align-items:center; gap:4px;
+      background:rgba(8,14,24,0.7);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:3px; border-radius:999px;
+    }
+    .nav-tab {
+      padding:6px 16px; border-radius:999px;
+      font-size:12.5px; font-weight:700; color:var(--sub);
+      cursor:pointer; border:none; background:transparent;
+      font-family:var(--font); text-decoration:none;
+      display:flex; align-items:center; gap:6px;
+      transition:all .18s ease;
+    }
+    .nav-tab:hover { color:#fff; }
+    .nav-tab.active {
+      background:linear-gradient(135deg,#1d3461,#162849);
+      color:var(--amber); border:1px solid rgba(245,158,11,0.3);
+    }
+    .nav-tab .badge {
+      background:var(--amber); color:#0d1520;
+      font-size:9px; font-weight:900; padding:1px 5px; border-radius:999px;
+    }
+    .date-chip { font-family:var(--mono); font-size:11px; color:var(--muted); }
+
+    /* ── СТРАНИЦА ── */
+    .page-content { max-width:1440px; margin:0 auto; padding:28px 24px 48px; }
+
+    /* ── ЗАГОЛОВОК ── */
+    .page-title { margin-bottom:24px; }
+    .page-title h1 { font-family:var(--display); font-size:20px; font-weight:700; color:#fff; }
+    .page-title p  { font-size:13px; color:var(--sub); margin-top:4px; }
+
+    /* Информационный блок */
+    .info-banner {
+      display:flex; align-items:flex-start; gap:14px;
+      background:rgba(59,130,246,0.07);
+      border:1px solid rgba(59,130,246,0.2);
+      border-radius:14px; padding:16px 20px;
+      margin-bottom:28px;
+    }
+    .info-icon { font-size:28px; flex-shrink:0; }
+    .info-text h3 { font-size:14px; font-weight:800; color:#93c5fd; margin-bottom:4px; }
+    .info-text p  { font-size:12.5px; color:var(--sub); line-height:1.6; }
+    .model-pills { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .mpill {
+      display:inline-flex; align-items:center; gap:5px;
+      font-family:var(--mono); font-size:11px; font-weight:700;
+      padding:3px 10px; border-radius:999px; border:1px solid;
+    }
+    .mpill-blue  { background:rgba(59,130,246,0.12);  color:#93c5fd;  border-color:rgba(59,130,246,0.3); }
+    .mpill-green { background:rgba(34,197,94,0.1);   color:#4ade80;  border-color:rgba(34,197,94,0.3); }
+    .mpill-amber { background:rgba(245,158,11,0.1);  color:var(--amber); border-color:rgba(245,158,11,0.3); }
+
+    /* ── СЕТКА СНИМКОВ ── */
+    .shots-grid {
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:20px;
+    }
+
+    .shot-card {
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 8px 30px rgba(0,0,0,0.4);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .shot-card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 14px 40px rgba(0,0,0,0.5);
+    }
+    .shot-card.incident { border-color:rgba(239,68,68,0.35); }
+
+    /* Верхняя планка карточки */
+    .shot-topbar {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 16px;
+      background:rgba(8,14,28,0.8);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .shot-title { font-size:13px; font-weight:800; color:#fff; }
+    .shot-sub   { font-size:11px; color:var(--sub); margin-top:1px; }
+
+    /* Изображение с разметкой */
+    .shot-img-wrap {
+      position:relative; overflow:hidden;
+      background:#040810;
+    }
+    .shot-img {
+      width:100%; display:block;
+      max-height:380px; object-fit:cover;
+    }
+
+    /* Overlay с bbox-метками прямо поверх фото */
+    .bbox-overlay {
+      position:absolute; inset:0; pointer-events:none;
+    }
+    /* SVG рисуется поверх изображения */
+    .bbox-svg { width:100%; height:100%; }
+
+    /* Нижняя метаданные */
+    .shot-meta {
+      padding:14px 16px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .meta-item small { display:block; font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
+    .meta-item strong { font-family:var(--mono); font-size:13px; color:#fff; font-weight:800; }
+
+    /* Нижняя плашка результата */
+    .shot-verdict {
+      margin:0 16px 16px;
+      padding:10px 14px;
+      border-radius:10px;
+      display:flex; align-items:center; gap:10px;
+      font-size:12.5px; font-weight:700;
+    }
+    .verdict-ok {
+      background:rgba(34,197,94,0.1);
+      border:1px solid rgba(34,197,94,0.25);
+      color:#4ade80;
+    }
+    .verdict-fraud {
+      background:rgba(239,68,68,0.1);
+      border:1px solid rgba(239,68,68,0.25);
+      color:#f87171;
+    }
+    .verdict-icon { font-size:18px; }
+    .verdict-detail { font-size:11px; color:var(--sub); margin-top:2px; font-weight:500; }
+
+    /* Табличка весов */
+    .weight-row {
+      display:flex; gap:6px; align-items:center;
+      font-family:var(--mono); font-size:11.5px; flex-wrap:wrap;
+    }
+    .wchip {
+      padding:2px 9px; border-radius:5px; font-weight:700;
+      border:1px solid;
+    }
+    .wchip-b { background:rgba(59,130,246,0.1); color:#93c5fd; border-color:rgba(59,130,246,0.25); }
+    .wchip-w { background:rgba(34,197,94,0.1);  color:#4ade80; border-color:rgba(34,197,94,0.25); }
+    .wchip-r { background:rgba(239,68,68,0.1);  color:#f87171; border-color:rgba(239,68,68,0.25); }
+
+    @media(max-width:900px) {
+      .shots-grid { grid-template-columns:1fr; }
+      .shot-meta  { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header class="top-bar">
+    <a href="index.html" class="brand">
+      <div class="logo-sq">🌾</div>
+      <span class="brand-text">Agro <b>Info</b></span>
+    </a>
+    <nav class="top-nav">
+      <a href="index.html" class="nav-tab">
+        <span>🗺</span> GPS Карта
+        <span class="badge">LIVE</span>
+      </a>
+      <a href="ai.html" class="nav-tab active"><span>🤖</span> AI-Зрение</a>
+      <a href="trips.html" class="nav-tab"><span>📋</span> Журнал рейсов</a>
+    </nav>
+    <span class="date-chip">18 сентября 2026</span>
+  </header>
+
+  <!-- КОНТЕНТ -->
+  <div class="page-content">
+
+    <div class="page-title">
+      <h1>🤖 Студия компьютерного зрения</h1>
+      <p>Снимки с камеры весовой платформы элеватора с результатами инференса модели · ТОО «Костанай-Агро»</p>
+    </div>
+
+    <!-- Сетка снимков -->
+    <div class="shots-grid">
+
+      <!-- ── Снимок 1.jpg (реальный результат пайплайна) ── -->
+      <div class="shot-card">
+        <div class="shot-topbar">
+          <div>
+            <div class="shot-title">1.jpg · Самосвал KAMAZ</div>
+            <div class="shot-sub">18 сентября 2026</div>
+          </div>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
+        </div>
+
+        <div class="shot-img-wrap">
+          <img src="web_assets/camera/annotated_1.jpg" class="shot-img" alt="1.jpg"/>
+        </div>
+
+        <div class="shot-meta">
+          <div class="meta-item"><small>Госномер</small><strong>160ALV10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>KAMAZ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">93.5%</strong></div>
+        </div>
+      </div>
+
+      <!-- ── Снимок 12.jpg ── -->
+      <div class="shot-card">
+        <div class="shot-topbar">
+          <div>
+            <div class="shot-title">12.jpg · Самосвал MAN</div>
+            <div class="shot-sub">18 сентября 2026</div>
+          </div>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
+        </div>
+
+        <div class="shot-img-wrap">
+          <img src="web_assets/camera/annotated_12.jpg" class="shot-img" alt="12.jpg"/>
+        </div>
+
+        <div class="shot-meta">
+          <div class="meta-item"><small>Госномер</small><strong>153AJX10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>MAN</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">92.3%</strong></div>
+        </div>
+      </div>
+
+      <!-- ── Снимок 19.jpg ── -->
+      <div class="shot-card">
+        <div class="shot-topbar">
+          <div>
+            <div class="shot-title">19.jpg · Самосвал КамАЗ</div>
+            <div class="shot-sub">18 сентября 2026</div>
+          </div>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
+        </div>
+
+        <div class="shot-img-wrap">
+          <img src="web_assets/camera/annotated_19.jpg" class="shot-img" alt="19.jpg"/>
+        </div>
+
+        <div class="shot-meta">
+          <div class="meta-item"><small>Госномер</small><strong>927DPA10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>КамАЗ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">95.6%</strong></div>
+        </div>
+      </div>
+
+      <!-- ── Снимок 18.jpg ── -->
+      <div class="shot-card">
+        <div class="shot-topbar">
+          <div>
+            <div class="shot-title">18.jpg · Самосвал MAZ</div>
+            <div class="shot-sub">18 сентября 2026</div>
+          </div>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
+        </div>
+
+        <div class="shot-img-wrap">
+          <img src="web_assets/camera/annotated_18.jpg" class="shot-img" alt="18.jpg"/>
+        </div>
+
+        <div class="shot-meta">
+          <div class="meta-item"><small>Госномер</small><strong>041AHF10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>MAZ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">92.6%</strong></div>
+        </div>
+      </div>
+
+    </div><!-- /shots-grid -->
+  </div><!-- /page-content -->
+
+</body>
+</html>

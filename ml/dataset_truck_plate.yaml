@@ -1,0 +1,11 @@
+path: C:/Users/akhonon/Desktop/haacka/Tractor Detection.v1i.yolov8
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 4
+names:
+  0: license plate
+  1: tractor
+  2: trailer
+  3: truck
