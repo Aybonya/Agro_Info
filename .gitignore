@@ -3,6 +3,9 @@
 venv/
 env/
 
+# Secrets
+.env
+
 # Python cache & bytecode
 __pycache__/
 *.pyc

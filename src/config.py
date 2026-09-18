@@ -15,7 +15,7 @@ KNOWN_MANUFACTURERS = [
     "KAMAZ", "MAZ", "GAZ", "ZIL", "URAL", "UAZ", "MTZ", "BELARUS",
     "VOLVO", "MAN", "SCANIA", "ISUZU", "HYUNDAI", "FOTON", "HOWO",
     "IVECO", "DAF", "MERCEDES", "RENAULT", "JOHN DEERE", "CASE",
-    "CLAAS", "NEW HOLLAND", "SHACMAN", "FAW",
+    "CLAAS", "NEW HOLLAND", "SHACMAN", "FAW", "KIROVETS", "LOVOL",
 ]
 
 # Типы техники для zero-shot классификации через CLIP (RU-подписи для отчёта)

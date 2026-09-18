@@ -73,7 +73,8 @@ def draw_annotation(image, vehicle_bbox, plate_result, classify_result, vehicle_
     cv2.rectangle(image, (x1, y1), (x2, y2), GREEN, 3)
     veh_label = f"ID:{vehicle_id} {classify_result.vehicle_type_ru}"
     if classify_result.manufacturer:
-        veh_label += f" ({classify_result.manufacturer})"
+        veh_label += f" ({classify_result.manufacturer}"
+        veh_label += f" {classify_result.model})" if classify_result.model else ")"
     _put_label(image, veh_label, (x1 + 4, y1 - 8 if y1 > 30 else y1 + 28), GREEN)
 
     plate_crop = None
@@ -85,7 +86,7 @@ def draw_annotation(image, vehicle_bbox, plate_result, classify_result, vehicle_
 
     # --- информационная панель в правом верхнем углу (как у LPR-референса) ---
     panel_w = 320
-    panel_h = 260
+    panel_h = 280 if classify_result.model else 260
     px, py = image.shape[1] - panel_w - 20, 20
     overlay = image.copy()
     cv2.rectangle(overlay, (px, py), (px + panel_w, py + panel_h), (25, 25, 25), -1)
@@ -111,11 +112,16 @@ def draw_annotation(image, vehicle_bbox, plate_result, classify_result, vehicle_
         cv2.putText(image, f"{plate_result.confidence * 100:.0f}%", (px + 12, text_y + 32),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 1, cv2.LINE_AA)
 
+    info_y = py + panel_h - (58 if classify_result.model else 38)
     _draw_text(image, f"Type: {classify_result.vehicle_type_ru}",
-               (px + 12, py + panel_h - 38), (255, 255, 255), font_size=18)
-    mf_text = f"Brand: {classify_result.manufacturer or '?'}"
-    cv2.putText(image, mf_text, (px + 12, py + panel_h - 18),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+               (px + 12, info_y), (255, 255, 255), font_size=18)
+    # Brand/Model — через PIL, не cv2.putText: GPT иногда возвращает кириллицу
+    # (например производитель "Кировец"), которую cv2 рисовать не умеет
+    _draw_text(image, f"Brand: {classify_result.manufacturer or '?'}",
+               (px + 12, info_y + 22), (255, 255, 255), font_size=18)
+    if classify_result.model:
+        _draw_text(image, f"Model: {classify_result.model}",
+                   (px + 12, info_y + 44), (255, 255, 255), font_size=18)
 
     return image
 
@@ -148,6 +154,7 @@ def process_image(path: Path) -> dict:
         "manufacturer": None,
         "manufacturer_confidence": None,
         "manufacturer_source": None,
+        "model": None,
         "plate_number": None,
         "plate_confidence": None,
         "plate_crop_file": None,
@@ -181,6 +188,7 @@ def process_image(path: Path) -> dict:
         "manufacturer": cls_result.manufacturer,
         "manufacturer_confidence": round(cls_result.manufacturer_confidence, 3),
         "manufacturer_source": cls_result.manufacturer_source,
+        "model": cls_result.model,
         "plate_number": plate_result.text,
         "plate_confidence": round(plate_result.confidence, 3) if plate_result.text else None,
         "plate_crop_file": plate_crop_file,

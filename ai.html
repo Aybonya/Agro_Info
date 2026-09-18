@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agro Info — AI-Зрение YOLO11 · ТОО «Олжа Агро»</title>
+  <title>Agro Info — AI-Зрение · ТОО «Олжа Агро»</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
@@ -222,14 +222,14 @@
       <a href="ai.html" class="nav-tab active"><span>🤖</span> AI-Зрение</a>
       <a href="trips.html" class="nav-tab"><span>📋</span> Журнал рейсов</a>
     </nav>
-    <span class="date-chip">18 сентября 2026 · YOLO11n</span>
+    <span class="date-chip">18 сентября 2026 · YOLOv8n + GPT-4o</span>
   </header>
 
   <!-- КОНТЕНТ -->
   <div class="page-content">
 
     <div class="page-title">
-      <h1>🤖 Студия компьютерного зрения — YOLO11</h1>
+      <h1>🤖 Студия компьютерного зрения</h1>
       <p>Снимки с камеры весовой платформы элеватора с результатами инференса модели · ТОО «Костанай-Агро»</p>
     </div>
 
@@ -237,14 +237,13 @@
     <div class="info-banner">
       <div class="info-icon">🧠</div>
       <div class="info-text">
-        <h3>Модель: YOLO11n (Nano) — детекция техники и госномеров в реальном времени</h3>
-        <p>Камера установлена на въезде на весовую платформу Костанайского Элеватора №1. При каждом въезде модель автоматически определяет класс кузова (трактор, зерновоз, грузовик), распознаёт госномер и сравнивает вес бункера с весовой платформой. Ниже представлены аннотированные снимки с реальными заездами сезона 2026.</p>
+        <h3>Пайплайн: YOLOv8n + дообученный детектор номера + PaddleOCR + GPT-4o (тип/бренд)</h3>
+        <p>Снимки с камеры весовой платформы. Для каждого въезда: YOLOv8n находит технику, отдельно дообученная модель локализует область номера, PaddleOCR читает текст, GPT-4o определяет тип техники и производителя по фото. Ниже — реальные результаты пайплайна на тестовых снимках, не постановочные числа.</p>
         <div class="model-pills">
-          <span class="mpill mpill-blue">YOLO11n · 3.2M params</span>
-          <span class="mpill mpill-green">mAP@50: 94.1%</span>
-          <span class="mpill mpill-amber">Скорость: ~14 ms / кадр</span>
-          <span class="mpill mpill-blue">2 класса: truck · tractor</span>
-          <span class="mpill mpill-green">OCR номеров: 96.2% accuracy</span>
+          <span class="mpill mpill-blue">YOLOv8n + дообученный детектор номера</span>
+          <span class="mpill mpill-green">Техника найдена: 26/26 (100%)</span>
+          <span class="mpill mpill-amber">Номер распознан: 16/26 (62%)</span>
+          <span class="mpill mpill-blue">Тип/бренд: GPT-4o vision</span>
         </div>
       </div>
     </div>
@@ -252,198 +251,102 @@
     <!-- Сетка снимков -->
     <div class="shots-grid">
 
-      <!-- ── Снимок 1 ── -->
+      <!-- ── Снимок 1.jpg (реальный результат пайплайна) ── -->
       <div class="shot-card">
         <div class="shot-topbar">
           <div>
-            <div class="shot-title">Заезд #1 · John Deere 8320R</div>
-            <div class="shot-sub">18 сен 2026, 07:14 · Водитель: Ерлан Мухамедиев</div>
+            <div class="shot-title">1.jpg · Самосвал KAMAZ</div>
+            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
           </div>
-          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ OK</span>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
 
         <div class="shot-img-wrap">
-          <img src="web_assets/camera/annotated_10.jpg" class="shot-img" alt="Заезд #1"/>
-          <div class="bbox-overlay">
-            <svg class="bbox-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <!-- Bbox кузова -->
-              <rect x="15" y="20" width="68" height="55" fill="none" stroke="#22c55e" stroke-width="0.6" rx="0.5"/>
-              <rect x="15" y="16" width="32" height="5" fill="#22c55e" rx="0.5"/>
-              <text x="16" y="20.5" font-size="4" fill="white" font-family="monospace" font-weight="bold">tractor 97.5%</text>
-              <!-- Bbox госномера -->
-              <rect x="30" y="60" width="35" height="8" fill="none" stroke="#f59e0b" stroke-width="0.5" rx="0.3"/>
-              <rect x="30" y="56.5" width="26" height="4" fill="#f59e0b" rx="0.3"/>
-              <text x="31" y="60" font-size="3.2" fill="#0d1520" font-family="monospace" font-weight="bold">10 523 ARA 96.4%</text>
-            </svg>
-          </div>
+          <img src="web_assets/camera/annotated_1.jpg" class="shot-img" alt="1.jpg"/>
         </div>
 
         <div class="shot-meta">
-          <div class="meta-item"><small>Госномер</small><strong>10 523 ARA</strong></div>
-          <div class="meta-item"><small>Класс</small><strong>tractor</strong></div>
-          <div class="meta-item"><small>Confidence</small><strong style="color:#4ade80">97.5%</strong></div>
-          <div class="meta-item"><small>Инференс</small><strong>14.2 ms</strong></div>
-        </div>
-
-        <div class="shot-verdict verdict-ok">
-          <span class="verdict-icon">✅</span>
-          <div>
-            <div>Вес совпадает — нарушений нет</div>
-            <div class="verdict-detail">
-              <div class="weight-row">
-                <span class="wchip wchip-b">Бункер: 12 960 кг</span>
-                <span class="wchip wchip-w">Весы: 12 940 кг</span>
-                <span class="wchip wchip-w">Δ -20 кг (-0.15%)</span>
-              </div>
-            </div>
-          </div>
+          <div class="meta-item"><small>Госномер</small><strong>160ALV10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>KAMAZ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">93.5%</strong></div>
         </div>
       </div>
 
-      <!-- ── Снимок 2 ── -->
+      <!-- ── Снимок 12.jpg ── -->
       <div class="shot-card">
         <div class="shot-topbar">
           <div>
-            <div class="shot-title">Заезд #2 · КАМАЗ 6520 Зерновоз</div>
-            <div class="shot-sub">18 сен 2026, 07:52 · Водитель: Нурлан Сейткали</div>
+            <div class="shot-title">12.jpg · Самосвал MAN</div>
+            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
           </div>
-          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ OK</span>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
 
         <div class="shot-img-wrap">
-          <img src="web_assets/camera/annotated_5.jpg" class="shot-img" alt="Заезд #2"/>
-          <div class="bbox-overlay">
-            <svg class="bbox-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect x="10" y="15" width="78" height="65" fill="none" stroke="#22c55e" stroke-width="0.6" rx="0.5"/>
-              <rect x="10" y="11" width="34" height="5" fill="#22c55e" rx="0.5"/>
-              <text x="11" y="15.5" font-size="4" fill="white" font-family="monospace" font-weight="bold">truck 95.2%</text>
-              <rect x="28" y="64" width="40" height="8" fill="none" stroke="#f59e0b" stroke-width="0.5" rx="0.3"/>
-              <rect x="28" y="60.5" width="32" height="4" fill="#f59e0b" rx="0.3"/>
-              <text x="29" y="64" font-size="3.2" fill="#0d1520" font-family="monospace" font-weight="bold">10 814 BSM 94.1%</text>
-            </svg>
-          </div>
+          <img src="web_assets/camera/annotated_12.jpg" class="shot-img" alt="12.jpg"/>
         </div>
 
         <div class="shot-meta">
-          <div class="meta-item"><small>Госномер</small><strong>10 814 BSM</strong></div>
-          <div class="meta-item"><small>Класс</small><strong>truck</strong></div>
-          <div class="meta-item"><small>Confidence</small><strong style="color:#4ade80">95.2%</strong></div>
-          <div class="meta-item"><small>Инференс</small><strong>13.8 ms</strong></div>
-        </div>
-
-        <div class="shot-verdict verdict-ok">
-          <span class="verdict-icon">✅</span>
-          <div>
-            <div>Вес совпадает — нарушений нет</div>
-            <div class="verdict-detail">
-              <div class="weight-row">
-                <span class="wchip wchip-b">Бункер: 14 600 кг</span>
-                <span class="wchip wchip-w">Весы: 14 580 кг</span>
-                <span class="wchip wchip-w">Δ -20 кг (-0.14%)</span>
-              </div>
-            </div>
-          </div>
+          <div class="meta-item"><small>Госномер</small><strong>153AJX10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>MAN</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">92.3%</strong></div>
         </div>
       </div>
 
-      <!-- ── Снимок 3 ── -->
+      <!-- ── Снимок 19.jpg ── -->
       <div class="shot-card">
         <div class="shot-topbar">
           <div>
-            <div class="shot-title">Заезд #3 · Shacman SX3258</div>
-            <div class="shot-sub">18 сен 2026, 08:33 · Водитель: Бауыржан Касымов</div>
+            <div class="shot-title">19.jpg · Самосвал КамАЗ</div>
+            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
           </div>
-          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ OK</span>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
 
         <div class="shot-img-wrap">
-          <img src="web_assets/camera/annotated_1.jpg" class="shot-img" alt="Заезд #3"/>
-          <div class="bbox-overlay">
-            <svg class="bbox-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <rect x="8" y="18" width="82" height="60" fill="none" stroke="#22c55e" stroke-width="0.6" rx="0.5"/>
-              <rect x="8" y="14" width="34" height="5" fill="#22c55e" rx="0.5"/>
-              <text x="9" y="18.5" font-size="4" fill="white" font-family="monospace" font-weight="bold">truck 96.8%</text>
-              <rect x="32" y="63" width="36" height="8" fill="none" stroke="#f59e0b" stroke-width="0.5" rx="0.3"/>
-              <rect x="32" y="59.5" width="32" height="4" fill="#f59e0b" rx="0.3"/>
-              <text x="33" y="63" font-size="3.2" fill="#0d1520" font-family="monospace" font-weight="bold">10 845 KZX 95.8%</text>
-            </svg>
-          </div>
+          <img src="web_assets/camera/annotated_19.jpg" class="shot-img" alt="19.jpg"/>
         </div>
 
         <div class="shot-meta">
-          <div class="meta-item"><small>Госномер</small><strong>10 845 KZX</strong></div>
-          <div class="meta-item"><small>Класс</small><strong>truck</strong></div>
-          <div class="meta-item"><small>Confidence</small><strong style="color:#4ade80">96.8%</strong></div>
-          <div class="meta-item"><small>Инференс</small><strong>14.5 ms</strong></div>
-        </div>
-
-        <div class="shot-verdict verdict-ok">
-          <span class="verdict-icon">✅</span>
-          <div>
-            <div>Вес совпадает — нарушений нет</div>
-            <div class="verdict-detail">
-              <div class="weight-row">
-                <span class="wchip wchip-b">Бункер: 13 200 кг</span>
-                <span class="wchip wchip-w">Весы: 13 170 кг</span>
-                <span class="wchip wchip-w">Δ -30 кг (-0.22%)</span>
-              </div>
-            </div>
-          </div>
+          <div class="meta-item"><small>Госномер</small><strong>927DPA10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>КамАЗ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">95.6%</strong></div>
         </div>
       </div>
 
-      <!-- ── Снимок 4 (ИНЦИДЕНТ) ── -->
-      <div class="shot-card incident">
+      <!-- ── Снимок 18.jpg ── -->
+      <div class="shot-card">
         <div class="shot-topbar">
           <div>
-            <div class="shot-title">Заезд #4 · Volvo FMX 460</div>
-            <div class="shot-sub">18 сен 2026, 09:05 · Водитель: Алексей Ветров</div>
+            <div class="shot-title">18.jpg · Самосвал MAZ</div>
+            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
           </div>
-          <span style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">⚠ ИНЦИДЕНТ</span>
+          <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
 
         <div class="shot-img-wrap">
-          <img src="web_assets/camera/annotated_18.jpg" class="shot-img" alt="Заезд #4 Инцидент"/>
-          <div class="bbox-overlay">
-            <svg class="bbox-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <!-- Красный bbox — инцидент -->
-              <rect x="7" y="16" width="84" height="65" fill="none" stroke="#ef4444" stroke-width="0.7" rx="0.5"/>
-              <rect x="7" y="12" width="34" height="5" fill="#ef4444" rx="0.5"/>
-              <text x="8" y="16.5" font-size="4" fill="white" font-family="monospace" font-weight="bold">truck 98.1%</text>
-              <!-- Bbox госномера -->
-              <rect x="30" y="65" width="38" height="8" fill="none" stroke="#f59e0b" stroke-width="0.5" rx="0.3"/>
-              <rect x="30" y="61.5" width="32" height="4" fill="#f59e0b" rx="0.3"/>
-              <text x="31" y="65" font-size="3.2" fill="#0d1520" font-family="monospace" font-weight="bold">10 107 ABC 97.5%</text>
-              <!-- Предупреждение -->
-              <rect x="20" y="38" width="60" height="12" fill="rgba(239,68,68,0.7)" rx="1"/>
-              <text x="50" y="45.5" font-size="4.5" fill="white" font-family="monospace" font-weight="bold" text-anchor="middle">⚠ НЕДОСТАЧА -1 250 кг</text>
-            </svg>
-          </div>
+          <img src="web_assets/camera/annotated_18.jpg" class="shot-img" alt="18.jpg"/>
         </div>
 
         <div class="shot-meta">
-          <div class="meta-item"><small>Госномер</small><strong>10 107 ABC</strong></div>
-          <div class="meta-item"><small>Класс</small><strong>truck</strong></div>
-          <div class="meta-item"><small>Confidence</small><strong style="color:#4ade80">98.1%</strong></div>
-          <div class="meta-item"><small>Инференс</small><strong>14.0 ms</strong></div>
-        </div>
-
-        <div class="shot-verdict verdict-fraud">
-          <span class="verdict-icon">🚨</span>
-          <div>
-            <div>Критическая недостача зерна — подозрение на слив</div>
-            <div class="verdict-detail">
-              <div class="weight-row">
-                <span class="wchip wchip-b">Бункер: 15 400 кг</span>
-                <span class="wchip wchip-w">Весы: 14 150 кг</span>
-                <span class="wchip wchip-r">Δ -1 250 кг (-8.12%)</span>
-              </div>
-            </div>
-          </div>
+          <div class="meta-item"><small>Госномер</small><strong>041AHF10</strong></div>
+          <div class="meta-item"><small>Тип</small><strong>Самосвал</strong></div>
+          <div class="meta-item"><small>Производитель</small><strong>MAZ</strong></div>
+          <div class="meta-item"><small>Уверенность (номер)</small><strong style="color:#4ade80">92.6%</strong></div>
         </div>
       </div>
 
     </div><!-- /shots-grid -->
+
+    <p style="margin-top:18px;font-size:11.5px;color:var(--muted);">
+      Рамки техники (зелёная) и номера (жёлтая) отрисованы самим пайплайном прямо на фото —
+      отдельного SVG-оверлея с "нарисованными от руки" боксами больше нет. Вес бункера/весовой
+      платформы и данные водителя пайплайн не вычисляет (нет сенсоров веса) — эти поля убраны,
+      чтобы не показывать выдуманные цифры.
+    </p>
   </div><!-- /page-content -->
 
 </body>
