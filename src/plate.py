@@ -1,13 +1,23 @@
 """Поиск и распознавание государственного номера в области техники."""
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 import cv2
 from paddleocr import PaddleOCR
 
-from config import PLATE_REGEX
+from config import PLATE_REGEX, ROOT_DIR
 
 _ocr = None
+# Специализированный детектор области номера (дообученный YOLOv8n на
+# псевдо-разметке) — находит табличку точнее, чем эвристика "нижние N%
+# бокса техники", особенно когда номер мелкий/сбоку. Необязателен: если
+# файла нет, просто используются остальные (эвристические) уровни поиска.
+_PLATE_DETECTOR_PATH = ROOT_DIR / "plate_finetune_best.pt"
+_PLATE_DETECTOR_MIN_CONF = 0.3
+_PLATE_DETECTOR_ZOOM = 6
+_plate_detector = None
+_plate_detector_loaded = False
 # Запасной (fallback) шаблон: цифры, затем ОДИН цельный блок букв, затем необязательные
 # цифры региона (регион часто не попадает в тот же OCR-фрагмент, что основной текст).
 # Ключевое ограничение — ровно один блок цифр и один блок букв без чередований:
@@ -52,6 +62,16 @@ def get_reader() -> PaddleOCR:
             enable_mkldnn=False,
         )
     return _ocr
+
+
+def _get_plate_detector():
+    global _plate_detector, _plate_detector_loaded
+    if not _plate_detector_loaded:
+        _plate_detector_loaded = True
+        if _PLATE_DETECTOR_PATH.exists():
+            from ultralytics import YOLO
+            _plate_detector = YOLO(str(_PLATE_DETECTOR_PATH))
+    return _plate_detector
 
 
 def _clean(text: str) -> str:
@@ -115,6 +135,21 @@ def _best_strict_match(text: str):
     return None
 
 
+def _best_fallback_match(text: str):
+    """То же самое обрезание постороннего префикса, что и в _best_strict_match,
+    но для мягкого фолбэк-формата — лишняя цифра/буква слева (шум по соседству,
+    склеенные фрагменты) иначе ломает распознавание уже реально читаемого номера.
+    Не обрезаем, если текст начинается как год ("20XX...") — иначе штамп даты на
+    кадре камеры ("2019 Tue" → "019TUE") опять начнёт подходить под формат."""
+    if re.match(r"^20\d\d", text):
+        return None
+    for start in range(0, min(len(text), _MAX_PREFIX_TRIM + 1)):
+        candidate = text[start:]
+        if len(candidate) in _FALLBACK_LEN_RANGE and _FALLBACK_PLATE_REGEX.match(candidate):
+            return candidate
+    return None
+
+
 def _match_fragments(fragments):
     """Прогоняет фрагменты OCR через три уровня проверки (точный формат номера,
     мягкий фолбэк, двухстрочный номер) и возвращает лучшего кандидата
@@ -130,13 +165,17 @@ def _match_fragments(fragments):
         return best
 
     # 2) запасной вариант: текст похож на номер по форме "цифры-буквы-(цифры)",
-    # даже если не совпадает точно (например, не распознался код региона)
-    fallback_candidates = [
-        (text, conf, bbox_local) for text, conf, bbox_local in fragments
-        if len(text) in _FALLBACK_LEN_RANGE and _FALLBACK_PLATE_REGEX.match(text)
-    ]
-    if fallback_candidates:
-        return max(fallback_candidates, key=lambda c: c[1])
+    # даже если не совпадает точно (например, не распознался код региона) —
+    # пробуем и сам текст, и его суффиксы (та же обрезка постороннего префикса,
+    # что и в строгом уровне: соседний шум иногда прилипает к цельно
+    # прочитанному номеру)
+    best_fallback = None
+    for text, conf, bbox_local in fragments:
+        matched = _best_fallback_match(text)
+        if matched is not None and (best_fallback is None or conf > best_fallback[1]):
+            best_fallback = (matched, conf, bbox_local)
+    if best_fallback is not None:
+        return best_fallback
 
     # 3) двухстрочный номер старого образца (серия сверху, номер снизу)
     two_line_matches = [
@@ -211,12 +250,22 @@ def _uncertain_candidate(fragments):
     текста, чтобы её можно было отметить рамкой и сохранить кроп. Кластер должен
     быть компактным (≤2 фрагментов) и достаточно уверенным целиком — иначе легко
     принять текстуру (протектор шины, грязь) или закрашенный инвентарный номер
-    техники за номерной знак."""
+    техники за номерной знак.
+
+    Каждый исходный фрагмент дополнительно рассматривается САМ ПО СЕБЕ, а не
+    только внутри кластера: цепная (транзитивная) кластеризация иногда слепляет
+    уже цельно прочитанный кусок номера с посторонним шумом рядом (буквы на
+    решётке радиатора и т.п.), из-за чего кластер разрастается за лимит и
+    отбрасывается целиком — а без этого хороший фрагмент терялся бы вместе с ним."""
     candidates = [
         (text, conf, bbox) for text, conf, bbox, n_frags in _cluster_fragments(fragments)
         if any(ch.isdigit() for ch in text)
         and n_frags <= _UNCERTAIN_MAX_FRAGMENTS
         and conf >= _UNCERTAIN_MIN_CONFIDENCE
+    ]
+    candidates += [
+        (text, conf, bbox) for text, conf, bbox in fragments
+        if any(ch.isdigit() for ch in text) and conf >= _UNCERTAIN_MIN_CONFIDENCE
     ]
     if not candidates:
         return None
@@ -243,6 +292,43 @@ def _zoomed_bottom_ocr(crop):
     return fragments
 
 
+def _detector_plate_ocr(crop):
+    """Находит табличку специализированным детектором, вырезает и увеличивает
+    именно её (с небольшим отступом) и гоняет OCR по этой тесной области.
+    Возвращает (conf_детектора, bbox_local_детектора) и список фрагментов OCR
+    в координатах исходного crop — либо (None, []), если модели нет/не нашла."""
+    detector = _get_plate_detector()
+    if detector is None:
+        return None, []
+    results = detector.predict(source=crop, verbose=False, conf=_PLATE_DETECTOR_MIN_CONF)[0]
+    if len(results.boxes) == 0:
+        return None, []
+
+    best_box = max(results.boxes, key=lambda b: float(b.conf[0]))
+    det_conf = float(best_box.conf[0])
+    px1, py1, px2, py2 = [int(v) for v in best_box.xyxy[0]]
+
+    # небольшой отступ вокруг найденного бокса — не обрезать край символов
+    pad_x = max(4, int((px2 - px1) * 0.15))
+    pad_y = max(4, int((py2 - py1) * 0.15))
+    ch, cw = crop.shape[:2]
+    px1, py1 = max(0, px1 - pad_x), max(0, py1 - pad_y)
+    px2, py2 = min(cw, px2 + pad_x), min(ch, py2 + pad_y)
+    plate_crop = crop[py1:py2, px1:px2]
+    if plate_crop.size == 0:
+        return (det_conf, (px1, py1, px2, py2)), []
+
+    zoomed = cv2.resize(
+        plate_crop, (plate_crop.shape[1] * _PLATE_DETECTOR_ZOOM, plate_crop.shape[0] * _PLATE_DETECTOR_ZOOM),
+        interpolation=cv2.INTER_CUBIC)
+    fragments = []
+    for text, conf, (zx1, zy1, zx2, zy2) in _run_ocr(zoomed):
+        bbox_local = (px1 + zx1 / _PLATE_DETECTOR_ZOOM, py1 + zy1 / _PLATE_DETECTOR_ZOOM,
+                      px1 + zx2 / _PLATE_DETECTOR_ZOOM, py1 + zy2 / _PLATE_DETECTOR_ZOOM)
+        fragments.append((text, conf, bbox_local))
+    return (det_conf, (px1, py1, px2, py2)), fragments
+
+
 def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     """image: полный кадр (numpy BGR). vehicle_bbox: bbox техники."""
     x1, y1, x2, y2 = [int(v) for v in vehicle_bbox]
@@ -256,6 +342,15 @@ def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     def to_global(bbox_local):
         lx1, ly1, lx2, ly2 = bbox_local
         return (x1 + lx1, y1 + ly1, x1 + lx2, y1 + ly2)
+
+    # 0) специализированный детектор области номера — точнее эвристики,
+    # особенно когда табличка мелкая или не в нижней части бокса техники
+    det_info, detector_fragments = _detector_plate_ocr(crop)
+    if detector_fragments:
+        match = _match_fragments(detector_fragments)
+        if match is not None:
+            text, conf, bbox_local = match
+            return PlateResult(text, conf, to_global(bbox_local))
 
     match = _match_fragments(_run_ocr(crop))
     zoom_fragments = None
@@ -276,6 +371,13 @@ def find_plate(image, vehicle_bbox: tuple) -> PlateResult:
     if uncertain is not None:
         _text, conf, bbox_local = uncertain
         return PlateResult(None, conf, to_global(bbox_local))
+
+    # если специализированный детектор нашёл область с приличной уверенностью,
+    # но OCR так и не смог прочитать текст ни на одном уровне — всё равно
+    # отмечаем её как неуверенного кандидата (граница видна, текста нет)
+    if det_info is not None and det_info[0] >= 0.5:
+        det_conf, det_bbox_local = det_info
+        return PlateResult(None, det_conf, to_global(det_bbox_local))
 
     return PlateResult(None, 0.0, None)
 
