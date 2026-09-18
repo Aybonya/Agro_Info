@@ -222,7 +222,7 @@
       <a href="ai.html" class="nav-tab active"><span>🤖</span> AI-Зрение</a>
       <a href="trips.html" class="nav-tab"><span>📋</span> Журнал рейсов</a>
     </nav>
-    <span class="date-chip">18 сентября 2026 · YOLOv8n + GPT-4o</span>
+    <span class="date-chip">18 сентября 2026</span>
   </header>
 
   <!-- КОНТЕНТ -->
@@ -233,21 +233,6 @@
       <p>Снимки с камеры весовой платформы элеватора с результатами инференса модели · ТОО «Костанай-Агро»</p>
     </div>
 
-    <!-- Информационный баннер -->
-    <div class="info-banner">
-      <div class="info-icon">🧠</div>
-      <div class="info-text">
-        <h3>Пайплайн: YOLOv8n + дообученный детектор номера + PaddleOCR + GPT-4o (тип/бренд)</h3>
-        <p>Снимки с камеры весовой платформы. Для каждого въезда: YOLOv8n находит технику, отдельно дообученная модель локализует область номера, PaddleOCR читает текст, GPT-4o определяет тип техники и производителя по фото. Ниже — реальные результаты пайплайна на тестовых снимках, не постановочные числа.</p>
-        <div class="model-pills">
-          <span class="mpill mpill-blue">YOLOv8n + дообученный детектор номера</span>
-          <span class="mpill mpill-green">Техника найдена: 26/26 (100%)</span>
-          <span class="mpill mpill-amber">Номер распознан: 16/26 (62%)</span>
-          <span class="mpill mpill-blue">Тип/бренд: GPT-4o vision</span>
-        </div>
-      </div>
-    </div>
-
     <!-- Сетка снимков -->
     <div class="shots-grid">
 
@@ -256,7 +241,7 @@
         <div class="shot-topbar">
           <div>
             <div class="shot-title">1.jpg · Самосвал KAMAZ</div>
-            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
+            <div class="shot-sub">18 сентября 2026</div>
           </div>
           <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
@@ -278,7 +263,7 @@
         <div class="shot-topbar">
           <div>
             <div class="shot-title">12.jpg · Самосвал MAN</div>
-            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
+            <div class="shot-sub">18 сентября 2026</div>
           </div>
           <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
@@ -300,7 +285,7 @@
         <div class="shot-topbar">
           <div>
             <div class="shot-title">19.jpg · Самосвал КамАЗ</div>
-            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
+            <div class="shot-sub">18 сентября 2026</div>
           </div>
           <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
@@ -322,7 +307,7 @@
         <div class="shot-topbar">
           <div>
             <div class="shot-title">18.jpg · Самосвал MAZ</div>
-            <div class="shot-sub">Номер и рамки — результат нашего пайплайна</div>
+            <div class="shot-sub">18 сентября 2026</div>
           </div>
           <span style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">✓ Номер распознан</span>
         </div>
@@ -340,13 +325,6 @@
       </div>
 
     </div><!-- /shots-grid -->
-
-    <p style="margin-top:18px;font-size:11.5px;color:var(--muted);">
-      Рамки техники (зелёная) и номера (жёлтая) отрисованы самим пайплайном прямо на фото —
-      отдельного SVG-оверлея с "нарисованными от руки" боксами больше нет. Вес бункера/весовой
-      платформы и данные водителя пайплайн не вычисляет (нет сенсоров веса) — эти поля убраны,
-      чтобы не показывать выдуманные цифры.
-    </p>
   </div><!-- /page-content -->
 
 </body>
